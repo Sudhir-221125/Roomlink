@@ -1,0 +1,117 @@
+/* ============================================================
+   ResidentOverview.module.css
+   ============================================================ */
+
+.section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.viewAll {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+}
+.viewAll:hover {
+  background: var(--color-primary-bg);
+}
+
+.list {
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--transition);
+}
+.item:last-child {
+  border-bottom: none;
+}
+.item:hover {
+  background: var(--color-surface-2);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.room {
+  font-size: 11.5px;
+  color: var(--color-text-faint);
+}
+
+/* ── Status badges ── */
+.status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+.statusPaid {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.statusPending {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.statusOverdue {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}

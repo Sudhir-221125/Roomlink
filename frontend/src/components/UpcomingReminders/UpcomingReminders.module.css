@@ -1,0 +1,65 @@
+/* ============================================================
+   UpcomingReminders.module.css
+   ============================================================ */
+
+.section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.list {
+  list-style: none;
+  padding: 8px 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  transition: background var(--transition);
+}
+.item:hover {
+  background: var(--color-surface-2);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.colorBrand   { background: var(--brand-500); }
+.colorWarning { background: var(--color-warning); }
+.colorSuccess { background: var(--color-success); }
+
+.info {
+  flex: 1;
+}
+
+.remTitle {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.remDate {
+  font-size: 11.5px;
+  color: var(--color-text-faint);
+  margin-top: 2px;
+}

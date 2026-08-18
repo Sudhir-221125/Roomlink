@@ -1,0 +1,44 @@
+/* ============================================================
+   AppLayout.module.css
+   ============================================================ */
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Main area ── */
+.main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: margin-left var(--transition);
+}
+
+/* When sidebar is in icon-only (collapsed) mode */
+.main.mainCollapsed {
+  margin-left: var(--sidebar-collapsed);
+}
+
+/* Mobile: sidebar is overlay, main takes full width */
+@media (max-width: 768px) {
+  .main {
+    margin-left: 0;
+  }
+}
+
+/* ── Page content area ── */
+.content {
+  flex: 1;
+  margin-top: var(--topbar-height);
+  padding: 28px 28px 40px;
+  background: var(--color-bg);
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 20px 16px 32px;
+  }
+}
