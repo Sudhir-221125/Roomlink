@@ -32,6 +32,7 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/spaces', require('./routes/spaceRoutes'));
 
 // Centralised error handler — must be registered AFTER all routes
 app.use(errorHandler);
