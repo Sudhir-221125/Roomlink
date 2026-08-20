@@ -30,6 +30,9 @@ app.get('/', (req, res) => {
   });
 });
 
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+
 // Centralised error handler — must be registered AFTER all routes
 app.use(errorHandler);
 
