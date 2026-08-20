@@ -1,0 +1,143 @@
+/* ============================================================
+   SearchOverlay.module.css
+   ============================================================ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  animation: fade-in var(--duration-fast) var(--ease-out) forwards;
+}
+
+.panel {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 520px;
+  overflow: hidden;
+  margin: 0 16px;
+  animation: pop-in var(--duration-normal) var(--ease-spring) forwards;
+}
+
+/* ── Input ── */
+.inputWrap {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+  gap: 10px;
+}
+
+.searchIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-faint);
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--color-heading);
+  background: transparent;
+}
+.input::placeholder {
+  color: var(--color-text-faint);
+}
+
+.kbd {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-faint);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+/* ── Results ── */
+.results {
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.result:hover,
+.resultActive {
+  background: var(--color-surface-2);
+}
+
+.resultIcon {
+  font-size: 16px;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.resultText {
+  flex: 1;
+  min-width: 0;
+}
+
+.resultLabel {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-heading);
+  display: block;
+}
+
+.resultDetail {
+  font-size: 12px;
+  color: var(--color-text-faint);
+}
+
+.resultType {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-faint);
+  flex-shrink: 0;
+}
+
+.noResults {
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.hint {
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-faint);
+}

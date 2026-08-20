@@ -1,0 +1,146 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.primaryButton {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background-color: var(--primary-hover);
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.filterSelect {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-0);
+  color: var(--text-primary);
+  outline: none;
+  min-width: 150px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  background-color: var(--surface-0);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+  background-color: var(--surface-50);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.issueId {
+  font-family: monospace;
+  color: var(--text-tertiary);
+}
+
+.issueTitle {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.reporter {
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.room {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.dateCell {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.assignee {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.textButton {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.textButton:hover {
+  text-decoration: underline;
+}
+
+.emptyRow {
+  text-align: center;
+  padding: 3rem !important;
+  color: var(--text-tertiary);
+  font-style: italic;
+}

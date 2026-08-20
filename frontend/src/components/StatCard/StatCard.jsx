@@ -50,28 +50,30 @@ const COLOR_CLASS = {
 export default function StatCard({ label, value, sub, trend, trendUp, icon, color }) {
   return (
     <article className={styles.card} aria-label={`${label}: ${value}`}>
-      {/* Icon */}
-      <div className={[styles.iconWrap, COLOR_CLASS[color] || ''].join(' ')} aria-hidden="true">
-        {ICONS[icon]}
+      <div className={styles.cardTop}>
+        {/* Icon */}
+        <div className={[styles.iconWrap, COLOR_CLASS[color] || ''].join(' ')} aria-hidden="true">
+          {ICONS[icon]}
+        </div>
+
+        {/* Trend */}
+        <div className={[styles.trend, trendUp ? styles.trendUp : styles.trendDown].join(' ')}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+            width="12" height="12" aria-hidden="true">
+            {trendUp
+              ? <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              : <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />}
+          </svg>
+          <span>{trend}</span>
+        </div>
       </div>
 
       {/* Content */}
       <div className={styles.content}>
-        <p className={styles.label}>{label}</p>
         <p className={styles.value}>{value}</p>
+        <p className={styles.label}>{label}</p>
         <p className={styles.sub}>{sub}</p>
-      </div>
-
-      {/* Trend */}
-      <div className={[styles.trend, trendUp ? styles.trendUp : styles.trendDown].join(' ')}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-          width="12" height="12" aria-hidden="true">
-          {trendUp
-            ? <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-            : <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />}
-        </svg>
-        <span>{trend}</span>
       </div>
     </article>
   );

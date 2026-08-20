@@ -3,13 +3,14 @@
  * RoomLink left-hand navigation sidebar.
  * Supports collapsed state on smaller screens and mobile overlay mode.
  */
+import { useEffect } from 'react';
 import styles from './Sidebar.module.css';
 
 // ── Nav item definitions ────────────────────────────────────────────────────
 const NAV_ITEMS = [
   {
-    id: 'dashboard',
-    label: 'Dashboard',
+    id: 'overview',
+    label: 'Overview',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -33,7 +34,7 @@ const NAV_ITEMS = [
   },
   {
     id: 'rent',
-    label: 'Rent & Payments',
+    label: 'Rent',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -93,6 +94,18 @@ const NAV_ITEMS = [
     ),
   },
   {
+    id: 'notifications',
+    label: 'Notifications',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      </svg>
+    ),
+    badge: 5,
+  },
+  {
     id: 'settings',
     label: 'Settings',
     icon: (
@@ -107,6 +120,16 @@ const NAV_ITEMS = [
 
 // ── Component ───────────────────────────────────────────────────────────────
 export default function Sidebar({ activePage, onNavigate, collapsed, mobileOpen, onMobileClose }) {
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Escape' && mobileOpen) {
+        onMobileClose();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileOpen, onMobileClose]);
+
   return (
     <>
       {/* Mobile backdrop overlay */}
@@ -130,7 +153,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed, mobileOpen,
         <div className={styles.brand}>
           <div className={styles.brandIcon} aria-hidden="true">
             <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="32" height="32" rx="8" fill="#6366f1" />
+              <rect width="32" height="32" rx="8" fill="var(--color-primary)" />
               <path d="M7 22V13l9-7 9 7v9" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               <rect x="13" y="16" width="6" height="6" rx="1" fill="#fff" fillOpacity="0.85" />
             </svg>
@@ -164,6 +187,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed, mobileOpen,
                   }}
                   aria-current={activePage === item.id ? 'page' : undefined}
                   title={collapsed ? item.label : undefined}
+                  aria-label={item.label}
                 >
                   <span className={styles.navIcon} aria-hidden="true">
                     {item.icon}

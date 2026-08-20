@@ -1,71 +1,102 @@
 /**
  * DashboardPage.jsx
- * The main dashboard landing page for RoomLink.
- * Composes all dashboard widgets using mock data.
+ * The main "Command Center" dashboard for RoomLink.
  */
-import StatCard from '../../components/StatCard/StatCard';
-import ActivityFeed from '../../components/ActivityFeed/ActivityFeed';
+import { useState } from 'react';
+import NeedsAttention from '../../components/NeedsAttention/NeedsAttention';
+import OverviewMetrics from '../../components/OverviewMetrics/OverviewMetrics';
+import TodaySchedule from '../../components/TodaySchedule/TodaySchedule';
+import QuickActions from '../../components/QuickActions/QuickActions';
 import ResidentOverview from '../../components/ResidentOverview/ResidentOverview';
+import ActivityFeed from '../../components/ActivityFeed/ActivityFeed';
 import UpcomingReminders from '../../components/UpcomingReminders/UpcomingReminders';
+import AddReminderModal from '../../components/AddReminderModal/AddReminderModal';
+
+import { useStaggeredReveal } from '../../hooks/useScrollReveal';
 import {
-  dashboardStats,
+  needsAttention,
   recentActivity,
   residents,
-  upcomingReminders,
+  upcomingReminders as initialReminders,
+  todaySchedule
 } from '../../services/mockData';
 import styles from './DashboardPage.module.css';
 
 export default function DashboardPage() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [reminders, setReminders] = useState(initialReminders);
+
+  // Staggered reveal for top-level layout sections
+  const layoutRef = useStaggeredReveal(`.${styles.revealSection}`, { threshold: 0.05 });
+
   // Current date greeting
-  const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const today = new Date();
+  const hour = today.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const dateString = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  function handleAddReminder(reminder) {
+    setReminders((prev) => [...prev, reminder]);
+  }
 
   return (
-    <div className={styles.page}>
-      {/* ── Page greeting ── */}
-      <div className={styles.greetingRow}>
-        <div>
-          <h1 className={styles.greeting}>{greeting}, Admin 👋</h1>
-          <p className={styles.greetingSub}>
-            Here&apos;s what&apos;s happening across your property today.
-          </p>
+    <div className={styles.page} ref={layoutRef}>
+      
+      {/* ── Top Row: Header & Overview Metrics ── */}
+      <div className={`${styles.topRow} ${styles.revealSection}`}>
+        <div className={styles.header}>
+          <div className={styles.headerContext}>
+            <span className={styles.dateLabel}>{dateString}</span>
+            <span className={styles.propertyLabel}>The Sunnydale House</span>
+          </div>
+          <h1 className={styles.greeting}>{greeting}, Alex</h1>
+          <p className={styles.greetingSub}>Here is what requires your attention today.</p>
         </div>
-
-        {/* Quick action */}
-        <button className={styles.actionBtn} id="add-reminder-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-            width="15" height="15" aria-hidden="true">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Add Reminder
-        </button>
+        
+        <div className={styles.metricsWrapper}>
+          <OverviewMetrics />
+        </div>
       </div>
 
-      {/* ── KPI cards row ── */}
-      <section aria-label="Key metrics">
-        <div className={styles.statsGrid}>
-          {dashboardStats.map((stat) => (
-            <StatCard key={stat.id} {...stat} />
-          ))}
-        </div>
-      </section>
-
-      {/* ── Main content grid ── */}
+      {/* ── Main Asymmetric Layout ── */}
       <div className={styles.mainGrid}>
-        {/* Activity feed — takes 2/3 width on large screens */}
-        <div className={styles.activityCol}>
-          <ActivityFeed activities={recentActivity} />
+        
+        {/* Left Column: Urgent & Actionable (65%) */}
+        <div className={styles.leftCol}>
+          <div className={styles.revealSection}>
+            <NeedsAttention items={needsAttention} />
+          </div>
+          
+          <div className={styles.revealSection}>
+            <TodaySchedule schedule={todaySchedule} />
+          </div>
         </div>
 
-        {/* Right panel — 1/3 width */}
-        <div className={styles.sideCol}>
-          <ResidentOverview residents={residents} />
-          <UpcomingReminders reminders={upcomingReminders} />
+        {/* Right Column: Context & Future (35%) */}
+        <div className={styles.rightCol}>
+          <div className={styles.revealSection}>
+            <QuickActions />
+          </div>
+          
+          <div className={styles.revealSection}>
+            <ResidentOverview residents={residents} />
+          </div>
+          
+          <div className={styles.revealSection}>
+            <UpcomingReminders reminders={reminders} onAddClick={() => setModalOpen(true)} />
+          </div>
+          
+          <div className={styles.revealSection}>
+            <ActivityFeed activities={recentActivity} />
+          </div>
         </div>
       </div>
+
+      <AddReminderModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onAdd={handleAddReminder}
+      />
     </div>
   );
 }

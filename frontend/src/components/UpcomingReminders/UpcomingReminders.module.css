@@ -3,35 +3,75 @@
    ============================================================ */
 
 .section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
   border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+  margin-bottom: var(--space-6);
 }
 
 .header {
-  padding: 18px 20px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--color-border);
 }
 
 .title {
-  font-size: 15px;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--color-heading);
 }
 
+.count {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.addBtn:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
 .list {
   list-style: none;
-  padding: 8px 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px 20px;
-  transition: background var(--transition);
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--transition-fast);
+}
+.item:last-child {
+  border-bottom: none;
 }
 .item:hover {
   background: var(--color-surface-2);
@@ -40,7 +80,7 @@
 .dot {
   width: 10px;
   height: 10px;
-  border-radius: var(--radius-full);
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
@@ -53,13 +93,13 @@
 }
 
 .remTitle {
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: var(--text-md);
+  font-weight: 500;
   color: var(--color-heading);
 }
 
 .remDate {
-  font-size: 11.5px;
-  color: var(--color-text-faint);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
   margin-top: 2px;
 }

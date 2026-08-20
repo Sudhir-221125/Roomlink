@@ -1,0 +1,15 @@
+/* ============================================================
+   PublicLayout.module.css
+   ============================================================ */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.main {
+  flex: 1;
+  padding-top: var(--topbar-height); /* Offset for fixed nav */
+}

@@ -1,0 +1,182 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.primaryButton {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background-color: var(--primary-hover);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.metricCard {
+  background-color: var(--surface-0);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metricLabel {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metricValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.successText { color: #16a34a; }
+.warningText { color: #ca8a04; }
+.dangerText { color: #dc2626; }
+
+.progressContainer {
+  background-color: var(--surface-0);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.progressBarBg {
+  background-color: var(--surface-100);
+  height: 0.75rem;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  background-color: #16a34a;
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.5s ease-out;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.filterSelect {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-0);
+  color: var(--text-primary);
+  outline: none;
+  min-width: 150px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  background-color: var(--surface-0);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+  background-color: var(--surface-50);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.residentName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.amount {
+  font-weight: 600;
+}
+
+.dateCell {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.textButton {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.textButton:hover {
+  text-decoration: underline;
+}

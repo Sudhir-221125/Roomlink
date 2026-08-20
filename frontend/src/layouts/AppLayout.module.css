@@ -39,6 +39,11 @@
 
 @media (max-width: 768px) {
   .content {
-    padding: 20px 16px 32px;
+    padding: 20px 20px 32px;
   }
+}
+
+/* ── Page Transition ── */
+.pageTransition {
+  animation: fade-in-up var(--duration-normal) var(--ease-out) forwards;
 }

@@ -1,0 +1,15 @@
+import styles from './Skeleton.module.css';
+
+export default function Skeleton({ width, height, variant = 'rectangular', className = '' }) {
+  const inlineStyles = {
+    ...(width && { width }),
+    ...(height && { height }),
+  };
+
+  return (
+    <div
+      className={`${styles.skeleton} ${styles[variant]} ${className}`}
+      style={inlineStyles}
+    />
+  );
+}

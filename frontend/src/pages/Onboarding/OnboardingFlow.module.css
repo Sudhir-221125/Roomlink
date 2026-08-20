@@ -1,0 +1,216 @@
+/* ============================================================
+   OnboardingFlow.module.css
+   ============================================================ */
+
+.container {
+  min-height: 100vh;
+  background: var(--color-surface-2);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brandBadge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-lg);
+  color: var(--color-heading);
+}
+
+.cancelBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+.cancelBtn:hover {
+  color: var(--color-heading);
+}
+.cancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.card {
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.progressWrap {
+  width: 100%;
+  height: 4px;
+  background: var(--color-border);
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 400ms var(--ease-spring);
+}
+
+.content {
+  padding: var(--space-8);
+}
+
+@media (max-width: 600px) {
+  .content {
+    padding: var(--space-5);
+  }
+}
+
+.stepFadeIn {
+  animation: fadeSlideUp 400ms var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .stepFadeIn {
+    animation: none;
+  }
+}
+
+.title {
+  font-size: var(--text-3xl);
+  color: var(--color-heading);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+  text-align: center;
+}
+
+.subtitle {
+  font-size: var(--text-md);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+/* ── Role Grid ── */
+.roleGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+@media (max-width: 600px) {
+  .roleGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.roleCard {
+  background: #fff;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.roleCard:hover {
+  border-color: var(--brand-300);
+  background: var(--color-surface-2);
+}
+.roleCardActive {
+  border-color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.roleIcon {
+  font-size: 32px;
+  margin-bottom: var(--space-4);
+}
+
+.roleCard h3 {
+  font-size: var(--text-lg);
+  color: var(--color-heading);
+  margin-bottom: var(--space-2);
+}
+
+.roleCard p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* ── Forms & Actions ── */
+.formGroup {
+  margin-bottom: var(--space-8);
+}
+
+.profileSetup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.avatarUpload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.avatarCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--brand-300);
+  color: var(--brand-800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.uploadBtn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+.uploadBtn:hover {
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.actionsSplit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
