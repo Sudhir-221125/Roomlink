@@ -44,4 +44,7 @@ router.delete(
 // Nest membership routes under /api/spaces/:spaceId/members
 router.use('/:spaceId/members', require('./membershipRoutes'));
 
+// Nest bill routes under /api/spaces/:spaceId/bills
+router.use('/:spaceId/bills', require('./billRoutes'));
+
 module.exports = router;
