@@ -12,15 +12,15 @@ import styles from './AppLayout.module.css';
 
 // Page title map (used by the Topbar/Breadcrumb)
 const PAGE_TITLES = {
-  overview:     'Overview',
-  rooms:        'Rooms & Residents',
-  rent:         'Rent',
-  bills:        'Bills',
-  chores:       'Chores',
-  complaints:   'Complaints',
-  guests:       'Guests',
-  notifications:'Notifications',
-  settings:     'Settings',
+  overview:      'Overview',
+  members:       'Members',
+  rent:          'Payments',
+  bills:         'Bills',
+  chores:        'Chores',
+  complaints:    'Complaints',
+  guests:        'Guests',
+  notifications: 'Notifications',
+  settings:      'Settings',
 };
 
 export default function AppLayout({ activePage, onNavigate, onLogout, children }) {

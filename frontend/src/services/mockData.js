@@ -1,25 +1,36 @@
 /**
  * mockData.js
  * Static mock data for the RoomLink frontend.
- * Replace with real API calls when the backend is ready.
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │  DATA SOURCE LEGEND                                                      │
+ * │                                                                          │
+ * │  ✅ REAL API  — Auth, Spaces, Memberships (via AuthContext/SpaceContext) │
+ * │  🟡 MOCK DATA — Bills, Payments, Chores, Complaints, Notifications      │
+ * │               (APIs not yet implemented — replace when ready)            │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ * When the backend implements the remaining APIs, search for "MOCK DATA" and
+ * replace each section with the corresponding service call.
  */
 
-// ── Helper: format a date N days from today ─────────────────────────────────
+// ── Helper: format a date N days from today ──────────────────────────────────
 function daysFromNow(n) {
   const d = new Date();
   d.setDate(d.getDate() + n);
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// ── Dashboard summary cards ─────────────────────────────────────────────────
+// ── 🟡 MOCK DATA: Dashboard summary cards ────────────────────────────────────
+// TODO: Replace with aggregated data from Bill/Chore/Complaint APIs
 export const dashboardStats = [
   {
     id: 'total-rent',
-    label: 'Total Rent',
+    label: 'Total Bills',
     value: '₹18,500',
-    sub: 'Due on 1st of month',
+    sub: 'Due this month',
     trend: '+2.4%',
-    trendUp: false,       // going up means more to pay — mark as neutral/bad
+    trendUp: false,
     icon: 'rent',
     color: 'brand',
   },
@@ -55,89 +66,67 @@ export const dashboardStats = [
   },
 ];
 
-// ── Recent activity feed ────────────────────────────────────────────────────
+// ── 🟡 MOCK DATA: Recent activity feed ───────────────────────────────────────
+// TODO: Replace with real activity/notification API when available
 export const recentActivity = [
   {
     id: 'act-1',
     type: 'payment',
-    actor: 'Riya Sharma',
-    message: 'paid ₹6,200 for July rent',
+    actor: 'Member A',
+    message: 'paid a bill for this month',
     time: '2 hours ago',
-    avatar: 'RS',
+    avatar: 'MA',
     avatarColor: '#0d9488',
   },
   {
     id: 'act-2',
     type: 'complaint',
-    actor: 'Arjun Mehta',
-    message: 'raised a complaint: AC not working in Room 3',
+    actor: 'Member B',
+    message: 'raised a new complaint',
     time: '5 hours ago',
-    avatar: 'AM',
+    avatar: 'MB',
     avatarColor: '#d97706',
   },
   {
     id: 'act-3',
     type: 'chore',
-    actor: 'Priya Nair',
-    message: 'marked "Kitchen cleaning" as done',
+    actor: 'Member C',
+    message: 'marked a chore as done',
     time: 'Yesterday, 8:30 PM',
-    avatar: 'PN',
+    avatar: 'MC',
     avatarColor: '#16a34a',
-  },
-  {
-    id: 'act-4',
-    type: 'guest',
-    actor: 'Karan Patel',
-    message: 'added a guest check-in for 3 days',
-    time: 'Yesterday, 4:00 PM',
-    avatar: 'KP',
-    avatarColor: '#2563eb',
   },
   {
     id: 'act-5',
     type: 'bill',
     actor: 'System',
-    message: 'Electricity bill of ₹1,840 added for this month',
+    message: 'A new bill was added for this month',
     time: '2 days ago',
     avatar: 'SY',
     avatarColor: '#7c3aed',
   },
-  {
-    id: 'act-6',
-    type: 'payment',
-    actor: 'Sneha Iyer',
-    message: 'paid ₹6,200 for July rent',
-    time: '3 days ago',
-    avatar: 'SI',
-    avatarColor: '#db2777',
-  },
 ];
 
-// ── Resident quick overview ─────────────────────────────────────────────────
+// ── 🟡 MOCK DATA: Resident overview (fallback when no real members loaded) ───
+// This is used ONLY as a fallback. DashboardPage prioritizes real members
+// from SpaceContext. Remove this when member data is always available.
 export const residents = [
-  { id: 'r1', name: 'Riya Sharma',  room: 'Room 1', status: 'paid',    avatar: 'RS', avatarColor: '#0d9488' },
-  { id: 'r2', name: 'Arjun Mehta', room: 'Room 2', status: 'pending',  avatar: 'AM', avatarColor: '#d97706' },
-  { id: 'r3', name: 'Priya Nair',  room: 'Room 3', status: 'paid',    avatar: 'PN', avatarColor: '#16a34a' },
-  { id: 'r4', name: 'Karan Patel', room: 'Room 4', status: 'overdue', avatar: 'KP', avatarColor: '#dc2626' },
-  { id: 'r5', name: 'Sneha Iyer',  room: 'Room 5', status: 'paid',    avatar: 'SI', avatarColor: '#db2777' },
+  { id: 'r1', name: 'Member One',   role: 'owner',  status: 'active',  avatar: 'M1', avatarColor: '#0d9488' },
+  { id: 'r2', name: 'Member Two',   role: 'admin',  status: 'active',  avatar: 'M2', avatarColor: '#d97706' },
+  { id: 'r3', name: 'Member Three', role: 'member', status: 'active',  avatar: 'M3', avatarColor: '#16a34a' },
 ];
 
-// ── Upcoming reminders (dynamic dates relative to today) ────────────────────
+// ── 🟡 MOCK DATA: Upcoming reminders ────────────────────────────────────────
+// TODO: Persist reminders via a future Notification/Reminder API
 export const upcomingReminders = [
   { id: 'rem-1', title: 'Rent Due',     date: daysFromNow(3),  color: 'brand' },
   { id: 'rem-2', title: 'Water Bill',   date: daysFromNow(7),  color: 'warning' },
   { id: 'rem-3', title: 'Deep Clean',   date: daysFromNow(12), color: 'success' },
 ];
 
-// ── Needs Attention items (derived from existing mock data) ─────────────────
+// ── 🟡 MOCK DATA: Needs Attention items ─────────────────────────────────────
+// TODO: Replace with aggregated data from Bill/Chore/Complaint APIs
 export const needsAttention = [
-  {
-    id: 'attn-1',
-    type: 'overdue',
-    title: 'Rent overdue',
-    description: 'Karan Patel — Room 4',
-    severity: 'danger',
-  },
   {
     id: 'attn-2',
     type: 'bills',
@@ -149,7 +138,7 @@ export const needsAttention = [
     id: 'attn-3',
     type: 'complaint',
     title: '2 open complaints',
-    description: '1 in progress — AC not working (Room 3)',
+    description: '1 in progress',
     severity: 'danger',
   },
   {
@@ -161,63 +150,57 @@ export const needsAttention = [
   },
 ];
 
-// ── Mock notifications ──────────────────────────────────────────────────────
+// ── 🟡 MOCK DATA: Notifications (dropdown) ──────────────────────────────────
+// TODO: Replace with GET /api/notifications when Notification API is implemented
 export const mockNotifications = [
   {
     id: 'notif-1',
-    title: 'Rent payment received',
-    body: 'Riya Sharma paid ₹6,200',
+    title: 'Bill payment received',
+    body: 'A member paid a bill',
     time: '2 hours ago',
     read: false,
   },
   {
     id: 'notif-2',
     title: 'New complaint filed',
-    body: 'AC not working — Room 3',
+    body: 'A complaint was raised in your space',
     time: '5 hours ago',
     read: false,
   },
   {
     id: 'notif-3',
     title: 'Chore completed',
-    body: 'Priya Nair finished kitchen cleaning',
+    body: 'A member finished a chore',
     time: 'Yesterday',
     read: true,
   },
   {
     id: 'notif-4',
-    title: 'Electricity bill added',
-    body: '₹1,840 for this month',
+    title: 'Bill added',
+    body: 'A new bill has been added for this month',
     time: '2 days ago',
     read: true,
   },
 ];
 
-// ── Searchable items (for frontend search overlay) ──────────────────────────
+// ── 🟡 MOCK DATA: Searchable items ───────────────────────────────────────────
+// Room-type entries removed (no Room model in DB).
+// Member entries are mock — TODO: replace with real member search from SpaceContext.
 export const searchableItems = [
-  { type: 'resident', label: 'Riya Sharma',  detail: 'Room 1 · Paid',     page: 'rooms' },
-  { type: 'resident', label: 'Arjun Mehta',  detail: 'Room 2 · Pending',  page: 'rooms' },
-  { type: 'resident', label: 'Priya Nair',   detail: 'Room 3 · Paid',     page: 'rooms' },
-  { type: 'resident', label: 'Karan Patel',  detail: 'Room 4 · Overdue',  page: 'rooms' },
-  { type: 'resident', label: 'Sneha Iyer',   detail: 'Room 5 · Paid',     page: 'rooms' },
-  { type: 'room',     label: 'Room 1',       detail: 'Riya Sharma',       page: 'rooms' },
-  { type: 'room',     label: 'Room 2',       detail: 'Arjun Mehta',       page: 'rooms' },
-  { type: 'room',     label: 'Room 3',       detail: 'Priya Nair',        page: 'rooms' },
-  { type: 'room',     label: 'Room 4',       detail: 'Karan Patel',       page: 'rooms' },
-  { type: 'room',     label: 'Room 5',       detail: 'Sneha Iyer',        page: 'rooms' },
-  { type: 'page',     label: 'Dashboard',    detail: 'Overview & stats',  page: 'dashboard' },
-  { type: 'page',     label: 'Rent & Payments', detail: 'Track rent',     page: 'rent' },
-  { type: 'page',     label: 'Bills',        detail: 'Utility bills',     page: 'bills' },
-  { type: 'page',     label: 'Chores',       detail: 'Task schedules',    page: 'chores' },
-  { type: 'page',     label: 'Complaints',   detail: 'Issue tracking',    page: 'complaints' },
-  { type: 'page',     label: 'Guests',       detail: 'Guest management',  page: 'guests' },
-  { type: 'page',     label: 'Settings',     detail: 'Configuration',     page: 'settings' },
+  { type: 'page', label: 'Dashboard',   detail: 'Overview & stats',  page: 'overview' },
+  { type: 'page', label: 'Members',     detail: 'Space members',      page: 'members' },
+  { type: 'page', label: 'Payments',    detail: 'Track payments',     page: 'rent' },
+  { type: 'page', label: 'Bills',       detail: 'Utility bills',      page: 'bills' },
+  { type: 'page', label: 'Chores',      detail: 'Task schedules',     page: 'chores' },
+  { type: 'page', label: 'Complaints',  detail: 'Issue tracking',     page: 'complaints' },
+  { type: 'page', label: 'Guests',      detail: 'Guest management',   page: 'guests' },
+  { type: 'page', label: 'Settings',    detail: 'Configuration',      page: 'settings' },
 ];
 
-// ── Today's Schedule ────────────────────────────────────────────────────────
+// ── 🟡 MOCK DATA: Today's Schedule ───────────────────────────────────────────
+// TODO: Replace with real Chore/Complaint API when available
 export const todaySchedule = [
-  { id: 'today-1', time: '10:00 AM', type: 'visitor', title: 'AC Repair Technician', detail: 'Expected for Room 3 AC repair' },
-  { id: 'today-2', time: '02:00 PM', type: 'chore', title: 'Trash Collection', detail: 'Assigned to: Arjun Mehta' },
-  { id: 'today-3', time: '06:30 PM', type: 'payment', title: 'Rent Follow-up', detail: 'Call Karan Patel regarding overdue rent' },
+  { id: 'today-1', time: '10:00 AM', type: 'visitor', title: 'Maintenance Technician', detail: 'Expected for repair work' },
+  { id: 'today-2', time: '02:00 PM', type: 'chore',   title: 'Trash Collection',       detail: 'Assigned to a member' },
+  { id: 'today-3', time: '06:30 PM', type: 'payment', title: 'Bill Follow-up',          detail: 'Check on pending payments' },
 ];
-

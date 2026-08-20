@@ -1,12 +1,19 @@
 /**
  * Sidebar.jsx
  * RoomLink left-hand navigation sidebar.
- * Supports collapsed state on smaller screens and mobile overlay mode.
+ *
+ * Changes from original:
+ * - Shows a space selector dropdown below the brand logo
+ * - 'Rooms & Residents' nav item renamed to 'Members' (page id: members)
+ * - Bottom user section shows real user name + role_in_space from contexts
+ * - Supports collapsed state on smaller screens and mobile overlay mode
  */
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useSpace } from '../../contexts/SpaceContext';
 import styles from './Sidebar.module.css';
 
-// ── Nav item definitions ────────────────────────────────────────────────────
+// ── Nav item definitions ─────────────────────────────────────────────────────
 const NAV_ITEMS = [
   {
     id: 'overview',
@@ -22,19 +29,21 @@ const NAV_ITEMS = [
     ),
   },
   {
-    id: 'rooms',
-    label: 'Rooms & Residents',
+    id: 'members',
+    label: 'Members',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
       </svg>
     ),
   },
   {
     id: 'rent',
-    label: 'Rent',
+    label: 'Payments',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -78,7 +87,6 @@ const NAV_ITEMS = [
         <line x1="12" y1="17" x2="12.01" y2="17" />
       </svg>
     ),
-    badge: 2,
   },
   {
     id: 'guests',
@@ -88,8 +96,8 @@ const NAV_ITEMS = [
         stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        <line x1="23" y1="11" x2="17" y2="11" />
+        <line x1="20" y1="8" x2="20" y2="14" />
       </svg>
     ),
   },
@@ -103,7 +111,6 @@ const NAV_ITEMS = [
         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
       </svg>
     ),
-    badge: 5,
   },
   {
     id: 'settings',
@@ -118,8 +125,104 @@ const NAV_ITEMS = [
   },
 ];
 
-// ── Component ───────────────────────────────────────────────────────────────
+// ── Space Selector ───────────────────────────────────────────────────────────
+function SpaceSelector({ collapsed }) {
+  const { spaces, currentSpace, selectSpace, isLoadingSpaces } = useSpace();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  if (isLoadingSpaces) {
+    return (
+      <div className={styles.spaceSelector} title="Loading spaces…">
+        <div className={styles.spaceSelectorIcon}>⊙</div>
+        {!collapsed && <span className={styles.spaceSelectorLabel}>Loading…</span>}
+      </div>
+    );
+  }
+
+  if (!currentSpace) {
+    return (
+      <div className={styles.spaceSelector} title="No space selected">
+        <div className={styles.spaceSelectorIcon}>＋</div>
+        {!collapsed && <span className={styles.spaceSelectorLabel}>No space</span>}
+      </div>
+    );
+  }
+
+  const spaceInitial = currentSpace.name?.charAt(0).toUpperCase() || '?';
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        className={styles.spaceSelector}
+        onClick={() => setOpen(v => !v)}
+        title={currentSpace.name}
+        aria-label={`Current space: ${currentSpace.name}. Click to switch.`}
+        aria-expanded={open}
+      >
+        <div className={styles.spaceSelectorIcon}>{spaceInitial}</div>
+        {!collapsed && (
+          <>
+            <div style={{ flex: 1, textAlign: 'left', overflow: 'hidden' }}>
+              <div className={styles.spaceSelectorLabel} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {currentSpace.name}
+              </div>
+              {currentSpace.type && (
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', lineHeight: 1 }}>{currentSpace.type}</div>
+              )}
+            </div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{ flexShrink: 0, opacity: 0.5 }}>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </>
+        )}
+      </button>
+
+      {open && !collapsed && spaces.length > 0 && (
+        <div className={styles.spaceDropdown} role="listbox" aria-label="Switch space">
+          {spaces.map(space => {
+            const id = space._id || space.id;
+            const isSelected = id === (currentSpace._id || currentSpace.id);
+            return (
+              <button
+                key={id}
+                className={`${styles.spaceOption} ${isSelected ? styles.spaceOptionActive : ''}`}
+                onClick={() => { selectSpace(id); setOpen(false); }}
+                role="option"
+                aria-selected={isSelected}
+              >
+                <div className={styles.spaceOptionIcon}>{space.name?.charAt(0).toUpperCase()}</div>
+                <div>
+                  <div style={{ fontWeight: 500, fontSize: 'var(--text-sm)' }}>{space.name}</div>
+                  {space.type && <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{space.type}</div>}
+                </div>
+                {isSelected && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14" style={{ marginLeft: 'auto', color: 'var(--color-primary)' }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 export default function Sidebar({ activePage, onNavigate, collapsed, mobileOpen, onMobileClose }) {
+  const { user } = useAuth();
+  const { myRole } = useSpace();
+
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.key === 'Escape' && mobileOpen) {
@@ -129,6 +232,10 @@ export default function Sidebar({ activePage, onNavigate, collapsed, mobileOpen,
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [mobileOpen, onMobileClose]);
+
+  const userInitial = user?.name?.charAt(0).toUpperCase() || '?';
+  const userName = user?.name || 'User';
+  const userRoleLabel = myRole ? myRole.charAt(0).toUpperCase() + myRole.slice(1) : 'Member';
 
   return (
     <>
@@ -166,6 +273,11 @@ export default function Sidebar({ activePage, onNavigate, collapsed, mobileOpen,
           )}
         </div>
 
+        {/* ── Space Selector ── */}
+        <div style={{ padding: collapsed ? 'var(--space-2)' : 'var(--space-2) var(--space-3)', borderBottom: '1px solid var(--color-border)' }}>
+          <SpaceSelector collapsed={collapsed} />
+        </div>
+
         {/* ── Nav section label ── */}
         {!collapsed && (
           <p className={styles.sectionLabel}>MAIN MENU</p>
@@ -195,11 +307,6 @@ export default function Sidebar({ activePage, onNavigate, collapsed, mobileOpen,
                   {!collapsed && (
                     <span className={styles.navLabel}>{item.label}</span>
                   )}
-                  {!collapsed && item.badge ? (
-                    <span className={styles.badge} aria-label={`${item.badge} open`}>
-                      {item.badge}
-                    </span>
-                  ) : null}
                 </button>
               </li>
             ))}
@@ -208,11 +315,11 @@ export default function Sidebar({ activePage, onNavigate, collapsed, mobileOpen,
 
         {/* ── User profile at bottom ── */}
         <div className={styles.userSection}>
-          <div className={styles.userAvatar} aria-hidden="true">A</div>
+          <div className={styles.userAvatar} aria-hidden="true">{userInitial}</div>
           {!collapsed && (
             <div className={styles.userInfo}>
-              <p className={styles.userName}>Admin</p>
-              <p className={styles.userRole}>Property Manager</p>
+              <p className={styles.userName}>{userName}</p>
+              <p className={styles.userRole}>{userRoleLabel}</p>
             </div>
           )}
         </div>

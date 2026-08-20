@@ -1,14 +1,29 @@
 /**
  * Topbar.jsx
  * Top navigation bar — shows page title, search trigger, notifications, and user controls.
+ * Now uses real user data from AuthContext instead of hardcoded strings.
  */
 import { useState } from 'react';
 import NotificationDropdown from '../NotificationDropdown/NotificationDropdown';
+import { useAuth } from '../../contexts/AuthContext';
+import { useSpace } from '../../contexts/SpaceContext';
 import styles from './Topbar.module.css';
 
 export default function Topbar({ pageTitle, onMenuToggle, onSearchOpen, onLogout }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const { currentSpace } = useSpace();
+
+  const handleLogout = () => {
+    setProfileOpen(false);
+    logout();
+    if (onLogout) onLogout();
+  };
+
+  const userInitial = user?.name?.charAt(0).toUpperCase() || '?';
+  const userName = user?.name || 'User';
+  const userEmail = user?.email || '';
 
   return (
     <header className={styles.topbar} role="banner">
@@ -29,8 +44,12 @@ export default function Topbar({ pageTitle, onMenuToggle, onSearchOpen, onLogout
 
       {/* Breadcrumb / Page title */}
       <nav aria-label="Breadcrumb" className={styles.breadcrumbArea}>
-        <span className={styles.breadcrumbBrand}>App</span>
-        <span className={styles.breadcrumbSep}>/</span>
+        {currentSpace && (
+          <>
+            <span className={styles.breadcrumbBrand}>{currentSpace.name}</span>
+            <span className={styles.breadcrumbSep}>/</span>
+          </>
+        )}
         <h1 className={styles.pageTitle}>{pageTitle}</h1>
       </nav>
 
@@ -40,7 +59,7 @@ export default function Topbar({ pageTitle, onMenuToggle, onSearchOpen, onLogout
         <button
           className={styles.searchBtn}
           onClick={onSearchOpen}
-          aria-label="Search rooms and residents"
+          aria-label="Search members and pages"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -57,7 +76,7 @@ export default function Topbar({ pageTitle, onMenuToggle, onSearchOpen, onLogout
           <button
             className={styles.iconBtn}
             onClick={() => { setNotifOpen((v) => !v); setProfileOpen(false); }}
-            aria-label="Notifications (2 unread)"
+            aria-label="Notifications"
             aria-expanded={notifOpen}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -73,26 +92,30 @@ export default function Topbar({ pageTitle, onMenuToggle, onSearchOpen, onLogout
 
         {/* Avatar Profile Dropdown */}
         <div className={styles.profileWrap}>
-          <button 
-            className={styles.avatarBtn} 
+          <button
+            className={styles.avatarBtn}
             onClick={() => { setProfileOpen((v) => !v); setNotifOpen(false); }}
             aria-label="Toggle profile menu"
             aria-expanded={profileOpen}
           >
-            <div className={styles.avatar} role="img" aria-hidden="true">A</div>
+            <div className={styles.avatar} role="img" aria-hidden="true">{userInitial}</div>
           </button>
-          
+
           {profileOpen && (
             <>
               <div className={styles.dropdownBackdrop} onClick={() => setProfileOpen(false)} />
               <div className={styles.profileDropdown}>
                 <div className={styles.profileHeader}>
-                  <p className={styles.profileName}>Admin User</p>
-                  <p className={styles.profileEmail}>admin@roomlink.com</p>
+                  <p className={styles.profileName}>{userName}</p>
+                  <p className={styles.profileEmail}>{userEmail}</p>
                 </div>
                 <div className={styles.profileActions}>
-                  <button className={styles.dropdownItem}>Account Settings</button>
-                  <button className={styles.dropdownItem} onClick={onLogout}>Log Out</button>
+                  <button className={styles.dropdownItem} onClick={() => { setProfileOpen(false); }}>
+                    Account Settings
+                  </button>
+                  <button className={styles.dropdownItem} onClick={handleLogout}>
+                    Log Out
+                  </button>
                 </div>
               </div>
             </>

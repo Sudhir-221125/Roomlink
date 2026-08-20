@@ -242,3 +242,95 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ── Space Selector ── */
+.spaceSelector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--sidebar-border);
+  background: transparent;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition);
+  font-size: var(--text-sm);
+  min-height: 44px;
+}
+.spaceSelector:hover {
+  background: var(--sidebar-item-hover-bg);
+}
+
+.spaceSelectorIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.spaceSelectorLabel {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--sidebar-text);
+  display: block;
+}
+
+.spaceDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--sidebar-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 300;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.spaceOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: calc(var(--radius-md) - 2px);
+  border: none;
+  background: transparent;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition);
+  font-size: var(--text-sm);
+}
+.spaceOption:hover {
+  background: var(--sidebar-item-hover-bg);
+}
+.spaceOptionActive {
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.spaceOptionIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}

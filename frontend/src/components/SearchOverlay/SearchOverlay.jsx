@@ -9,8 +9,7 @@ import { searchableItems } from '../../services/mockData';
 import styles from './SearchOverlay.module.css';
 
 const TYPE_ICONS = {
-  resident: '👤',
-  room: '🏠',
+  member: '👤',
   page: '📄',
 };
 
@@ -92,10 +91,10 @@ export default function SearchOverlay({ open, onClose, onNavigate }) {
             ref={inputRef}
             className={styles.input}
             type="text"
-            placeholder="Search rooms, residents, pages…"
+            placeholder="Search members and pages…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search rooms, residents, and pages"
+            aria-label="Search members and pages"
           />
           <kbd className={styles.kbd}>Esc</kbd>
         </div>
@@ -131,7 +130,7 @@ export default function SearchOverlay({ open, onClose, onNavigate }) {
 
         {query.trim().length === 0 && (
           <div className={styles.hint}>
-            Start typing to search rooms, residents, or pages
+            Start typing to search members or pages
           </div>
         )}
       </div>

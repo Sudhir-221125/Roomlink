@@ -1,9 +1,10 @@
 import styles from './Skeleton.module.css';
 
-export default function Skeleton({ width, height, variant = 'rectangular', className = '' }) {
+export default function Skeleton({ width, height, variant = 'rectangular', className = '', style = {} }) {
   const inlineStyles = {
     ...(width && { width }),
     ...(height && { height }),
+    ...style,
   };
 
   return (
