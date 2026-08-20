@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
+const errorHandler = require('./middleware/errorHandler');
 
 // Import all models to ensure schemas are registered with Mongoose
 const models = require('./models');
@@ -28,6 +29,9 @@ app.get('/', (req, res) => {
     models: Object.keys(models),
   });
 });
+
+// Centralised error handler — must be registered AFTER all routes
+app.use(errorHandler);
 
 // Start Server and Connect Database
 const startServer = async () => {
