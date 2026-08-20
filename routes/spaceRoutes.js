@@ -47,4 +47,10 @@ router.use('/:spaceId/members', require('./membershipRoutes'));
 // Nest bill routes under /api/spaces/:spaceId/bills
 router.use('/:spaceId/bills', require('./billRoutes'));
 
+// Nest chore routes under /api/spaces/:spaceId/chores
+router.use('/:spaceId/chores', require('./choreRoutes'));
+
+// Nest complaint routes under /api/spaces/:spaceId/complaints
+router.use('/:spaceId/complaints', require('./complaintRoutes'));
+
 module.exports = router;

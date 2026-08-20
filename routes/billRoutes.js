@@ -50,4 +50,7 @@ router.delete(
   deleteBill
 );
 
+// Nest payment routes under /api/spaces/:spaceId/bills/:billId/payments
+router.use('/:billId/payments', require('./paymentRoutes'));
+
 module.exports = router;
