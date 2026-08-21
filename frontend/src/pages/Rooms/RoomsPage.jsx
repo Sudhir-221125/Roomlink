@@ -70,6 +70,7 @@ function MembersTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('All');
   const [removingId, setRemovingId] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const filteredMembers = members.filter(m => {
     const memberUser = m.user_id || m.user || {};
@@ -151,7 +152,7 @@ function MembersTab() {
         </select>
         <button
           className={styles.primaryButton}
-          onClick={() => showToast('Add member by user ID coming soon — ask your admin to use the backend API', 'info')}
+          onClick={() => setShowAddModal(true)}
           style={{ marginLeft: 'auto' }}
           disabled={!canAddMembers()}
           title={!canAddMembers() ? 'Only owner/admin can add members' : undefined}
@@ -242,6 +243,15 @@ function MembersTab() {
               ? "No members match your current filters."
               : "This space has no members yet. Add members to get started."
           }
+        />
+      )}
+
+      {showAddModal && (
+        <AddMemberModal
+          onClose={() => setShowAddModal(false)}
+          onAdded={() => setShowAddModal(false)}
+          showToast={showToast}
+          addSpaceMember={addSpaceMember}
         />
       )}
     </>
@@ -425,6 +435,64 @@ export default function RoomsPage() {
       <div className={styles.content}>
         {activeTab === 'members' && <MembersTab />}
         {activeTab === 'space' && <SpaceInfoTab />}
+      </div>
+    </div>
+  );
+}
+
+// ── Add Member Modal ────────────────────────────────────────────────────────
+function AddMemberModal({ onClose, onAdded, showToast, addSpaceMember }) {
+  const [userId, setUserId] = useState('');
+  const [role, setRole] = useState('member');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!userId.trim()) { showToast('User ID is required', 'error'); return; }
+
+    setIsSubmitting(true);
+    try {
+      await addSpaceMember(userId.trim(), role);
+      showToast('Member added successfully', 'success');
+      onAdded();
+    } catch (err) {
+      showToast(err.message || 'Failed to add member', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 1000,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }} onClick={onClose} />
+      <div style={{
+        position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-6)', width: '100%', maxWidth: 440, boxShadow: 'var(--shadow-xl)',
+      }}>
+        <h2 style={{ marginBottom: 'var(--space-4)', fontSize: 'var(--text-lg)', fontWeight: 600 }}>Add Member</h2>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div className="auth-field">
+            <label className="auth-label">User ID *</label>
+            <input className="auth-input" value={userId} onChange={e => setUserId(e.target.value)} disabled={isSubmitting} placeholder="Enter the user's ID" />
+            <p style={{fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: 4}}>The user must be registered in RoomLink.</p>
+          </div>
+          <div className="auth-field">
+            <label className="auth-label">Role</label>
+            <select className="auth-input" value={role} onChange={e => setRole(e.target.value)} disabled={isSubmitting}>
+              <option value="admin">Admin</option>
+              <option value="member">Member</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+            <button type="button" className="rl-btn" onClick={onClose} disabled={isSubmitting}>Cancel</button>
+            <button type="submit" className="rl-btn rl-btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Adding…' : 'Add Member'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

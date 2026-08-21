@@ -1,50 +1,82 @@
 import styles from './OverviewMetrics.module.css';
 
-export default function OverviewMetrics() {
+export default function OverviewMetrics({ 
+  totalBilled = 0, 
+  totalPaid = 0, 
+  outstandingAmount = 0, 
+  pendingBillsCount = 0, 
+  membersCount = 0, 
+  openIssuesCount = 0, 
+  inProgressIssuesCount = 0,
+  isLoading = false
+}) {
+  const collectionProgress = totalBilled > 0 ? (totalPaid / totalBilled) * 100 : 100;
+  
   return (
     <section className={styles.section} aria-label="Overview Metrics">
       <div className={styles.metricsGrid}>
         
-        {/* Large Visual KPI: Rent */}
+        {/* Large Visual KPI: Rent / Bill Collection */}
         <div className={styles.kpiCard}>
           <div className={styles.kpiHeader}>
-            <h3>Rent Collection</h3>
-            <span className={styles.badgeSuccess}>On track</span>
+            <h3>Bill Collection</h3>
+            {isLoading ? (
+               <span className={styles.badgeNeutral}>Loading...</span>
+            ) : outstandingAmount === 0 && totalBilled > 0 ? (
+               <span className={styles.badgeSuccess}>All paid</span>
+            ) : outstandingAmount === 0 ? (
+               <span className={styles.badgeNeutral}>No bills</span>
+            ) : (
+               <span className={styles.badgeWarning}>Pending</span>
+            )}
           </div>
           <div className={styles.kpiBody}>
-            <div className={styles.kpiValue}>
-              <span className={styles.currency}>₹</span>18,500 
-              <span className={styles.kpiTarget}>/ ₹24,000</span>
-            </div>
-            <div className={styles.progressBarWrap} aria-hidden="true">
-              <div className={styles.progressBar} style={{ width: '77%' }} />
-            </div>
-            <p className={styles.kpiSub}>₹5,500 remaining for this month</p>
+            {isLoading ? (
+               <div className={styles.kpiValue} style={{ color: 'var(--color-text-muted)', fontSize: '1.5rem' }}>Loading data...</div>
+            ) : (
+               <>
+                 <div className={styles.kpiValue}>
+                   <span className={styles.currency}>₹</span>{totalPaid.toLocaleString()} 
+                   <span className={styles.kpiTarget}>/ ₹{totalBilled.toLocaleString()}</span>
+                 </div>
+                 <div className={styles.progressBarWrap} aria-hidden="true">
+                   <div className={styles.progressBar} style={{ width: `${Math.min(collectionProgress, 100)}%` }} />
+                 </div>
+                 <p className={styles.kpiSub}>
+                   {outstandingAmount > 0 ? `₹${outstandingAmount.toLocaleString()} remaining` : 'All bills settled'}
+                 </p>
+               </>
+            )}
           </div>
         </div>
 
-        {/* Medium Visual KPI: Occupancy */}
+        {/* Medium Visual KPI: Members */}
         <div className={styles.kpiCard}>
           <div className={styles.kpiHeader}>
-            <h3>Occupancy</h3>
-            <span className={styles.badgeNeutral}>Stable</span>
+            <h3>Members</h3>
+            <span className={styles.badgeSuccess}>Active</span>
           </div>
           <div className={styles.kpiBody}>
-            <div className={styles.occupancyVisual}>
-              <div className={styles.occItemActive} title="Room 1 (Occupied)"></div>
-              <div className={styles.occItemActive} title="Room 2 (Occupied)"></div>
-              <div className={styles.occItemActive} title="Room 3 (Occupied)"></div>
-              <div className={styles.occItemActive} title="Room 4 (Occupied)"></div>
-              <div className={styles.occItemEmpty} title="Room 5 (Empty)"></div>
-            </div>
-            <div className={styles.kpiValue}>
-              4 <span className={styles.kpiTarget}>/ 5 Rooms</span>
-            </div>
-            <p className={styles.kpiSub}>Room 5 is currently vacant</p>
+             {isLoading ? (
+               <div className={styles.kpiValue} style={{ color: 'var(--color-text-muted)', fontSize: '1.5rem' }}>Loading...</div>
+             ) : (
+               <>
+                 <div className={styles.occupancyVisual}>
+                   {Array.from({ length: Math.min(membersCount, 5) }).map((_, i) => (
+                     <div key={i} className={styles.occItemActive} title="Member (Active)"></div>
+                   ))}
+                   {membersCount === 0 && <div className={styles.occItemEmpty} title="No Members"></div>}
+                 </div>
+                 <div className={styles.kpiValue}>
+                   {membersCount} <span className={styles.kpiTarget}>Residents</span>
+                 </div>
+                 <p className={styles.kpiSub}>{membersCount} active members in space</p>
+               </>
+             )}
           </div>
         </div>
 
-        {/* Smaller Chips: Bills & Chores */}
+        {/* Smaller Chips: Bills & Issues */}
         <div className={styles.chipsCol}>
           <div className={styles.chipCard}>
             <div className={styles.chipIconWrap} style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#d97706' }}>
@@ -54,8 +86,8 @@ export default function OverviewMetrics() {
               </svg>
             </div>
             <div className={styles.chipContent}>
-              <h4>3 Pending Bills</h4>
-              <p>₹3,240 total</p>
+              <h4>{isLoading ? '...' : pendingBillsCount} Pending {pendingBillsCount === 1 ? 'Bill' : 'Bills'}</h4>
+              <p>{isLoading ? 'Loading' : `₹${outstandingAmount.toLocaleString()} total`}</p>
             </div>
           </div>
           
@@ -68,8 +100,8 @@ export default function OverviewMetrics() {
               </svg>
             </div>
             <div className={styles.chipContent}>
-              <h4>2 Open Issues</h4>
-              <p>1 in progress</p>
+              <h4>{isLoading ? '...' : openIssuesCount} Open {openIssuesCount === 1 ? 'Issue' : 'Issues'}</h4>
+              <p>{isLoading ? 'Loading' : `${inProgressIssuesCount} in progress`}</p>
             </div>
           </div>
         </div>

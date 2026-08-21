@@ -21,50 +21,6 @@ function daysFromNow(n) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// ── 🟡 MOCK DATA: Dashboard summary cards ────────────────────────────────────
-// TODO: Replace with aggregated data from Bill/Chore/Complaint APIs
-export const dashboardStats = [
-  {
-    id: 'total-rent',
-    label: 'Total Bills',
-    value: '₹18,500',
-    sub: 'Due this month',
-    trend: '+2.4%',
-    trendUp: false,
-    icon: 'rent',
-    color: 'brand',
-  },
-  {
-    id: 'pending-bills',
-    label: 'Pending Bills',
-    value: '₹3,240',
-    sub: '3 bills unpaid',
-    trend: '-1 from last month',
-    trendUp: true,
-    icon: 'bills',
-    color: 'warning',
-  },
-  {
-    id: 'pending-chores',
-    label: 'Pending Chores',
-    value: '5',
-    sub: '2 overdue',
-    trend: '+2 this week',
-    trendUp: false,
-    icon: 'chores',
-    color: 'danger',
-  },
-  {
-    id: 'open-complaints',
-    label: 'Open Complaints',
-    value: '2',
-    sub: '1 in progress',
-    trend: '-1 resolved',
-    trendUp: true,
-    icon: 'complaints',
-    color: 'info',
-  },
-];
 
 // ── 🟡 MOCK DATA: Recent activity feed ───────────────────────────────────────
 // TODO: Replace with real activity/notification API when available
@@ -124,31 +80,6 @@ export const upcomingReminders = [
   { id: 'rem-3', title: 'Deep Clean',   date: daysFromNow(12), color: 'success' },
 ];
 
-// ── 🟡 MOCK DATA: Needs Attention items ─────────────────────────────────────
-// TODO: Replace with aggregated data from Bill/Chore/Complaint APIs
-export const needsAttention = [
-  {
-    id: 'attn-2',
-    type: 'bills',
-    title: '3 bills unpaid',
-    description: '₹3,240 pending across electricity, water, internet',
-    severity: 'warning',
-  },
-  {
-    id: 'attn-3',
-    type: 'complaint',
-    title: '2 open complaints',
-    description: '1 in progress',
-    severity: 'danger',
-  },
-  {
-    id: 'attn-4',
-    type: 'chores',
-    title: '2 chores overdue',
-    description: 'Bathroom cleaning, trash disposal',
-    severity: 'warning',
-  },
-];
 
 
 

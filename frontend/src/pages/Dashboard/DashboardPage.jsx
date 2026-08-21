@@ -1,17 +1,4 @@
-/**
- * DashboardPage.jsx
- * The main "Command Center" dashboard for RoomLink.
- *
- * Space/user-aware:
- *   - Greeting uses the real user's name from AuthContext
- *   - Property label uses the current space name from SpaceContext
- *   - Member count comes from SpaceContext.members
- *
- * Data sources:
- *   - User / Space / Members → REAL API (via AuthContext + SpaceContext)
- *   - Bills / Chores / Complaints / Activity → MOCK DATA (APIs not yet implemented)
- */
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import NeedsAttention from '../../components/NeedsAttention/NeedsAttention';
 import OverviewMetrics from '../../components/OverviewMetrics/OverviewMetrics';
 import TodaySchedule from '../../components/TodaySchedule/TodaySchedule';
@@ -25,18 +12,93 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useSpace } from '../../contexts/SpaceContext';
 import { useStaggeredReveal } from '../../hooks/useScrollReveal';
 import {
-  needsAttention,
   recentActivity,
   upcomingReminders as initialReminders,
   todaySchedule,
 } from '../../services/mockData';
 import styles from './DashboardPage.module.css';
 
-export default function DashboardPage() {
+import { getBills } from '../../services/billService';
+import { getPayments } from '../../services/paymentService';
+import { getChores } from '../../services/choreService';
+import { getComplaints } from '../../services/complaintService';
+
+export default function DashboardPage({ onNavigate }) {
   const { user } = useAuth();
   const { currentSpace, members } = useSpace();
   const [modalOpen, setModalOpen] = useState(false);
   const [reminders, setReminders] = useState(initialReminders);
+
+  // REAL API State for derived metrics
+  const [bills, setBills] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [chores, setChores] = useState([]);
+  const [complaints, setComplaints] = useState([]);
+  const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);
+
+  const spaceId = currentSpace?._id || currentSpace?.id;
+
+  const fetchDashboardData = useCallback(async () => {
+    if (!spaceId) {
+      setBills([]);
+      setPayments([]);
+      setChores([]);
+      setComplaints([]);
+      setIsLoadingMetrics(false);
+      return;
+    }
+    
+    setIsLoadingMetrics(true);
+    try {
+      const [fetchedBills, fetchedChores, fetchedComplaints] = await Promise.all([
+        getBills(spaceId).catch(() => []),
+        getChores(spaceId).catch(() => []),
+        getComplaints(spaceId).catch(() => [])
+      ]);
+
+      const billsList = Array.isArray(fetchedBills) ? fetchedBills : [];
+      setBills(billsList);
+      setChores(Array.isArray(fetchedChores) ? fetchedChores : []);
+      setComplaints(Array.isArray(fetchedComplaints) ? fetchedComplaints : []);
+
+      // Fetch payments for all bills
+      let allPayments = [];
+      if (billsList.length > 0) {
+        const paymentPromises = billsList.map(b => getPayments(spaceId, b._id).catch(() => []));
+        const paymentsLists = await Promise.all(paymentPromises);
+        allPayments = paymentsLists.flat().filter(p => p !== undefined && p !== null);
+      }
+      setPayments(allPayments);
+
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setIsLoadingMetrics(false);
+    }
+  }, [spaceId]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  // Derived Metrics
+  const totalBilled = bills.reduce((sum, b) => sum + (b.amount || 0), 0);
+  const totalPaid = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+  const outstandingAmount = Math.max(totalBilled - totalPaid, 0);
+  
+  // Calculate pending bills count by computing remaining amount per bill
+  let pendingBillsCount = 0;
+  bills.forEach(bill => {
+    const billPayments = payments.filter(p => p.bill_id === bill._id);
+    const paidForBill = billPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+    if (bill.amount > paidForBill) {
+      pendingBillsCount++;
+    }
+  });
+
+  const pendingChores = chores.filter(c => c.status === 'pending' || c.status === 'in_progress');
+  const openComplaints = complaints.filter(c => c.status === 'open');
+  const inProgressComplaints = complaints.filter(c => c.status === 'in_progress');
 
   // Staggered reveal for top-level layout sections
   const layoutRef = useStaggeredReveal(`.${styles.revealSection}`, { threshold: 0.05 });
@@ -54,7 +116,6 @@ export default function DashboardPage() {
   const spaceName = currentSpace?.name || 'Your Space';
 
   // Build resident overview from real members (REAL API)
-  // Map Membership objects to the shape ResidentOverview expects
   const membersForOverview = members.slice(0, 5).map(m => {
     const memberUser = m.user_id || m.user || {};
     const name = memberUser.name || 'Unknown';
@@ -62,7 +123,7 @@ export default function DashboardPage() {
       id: m._id || memberUser._id || memberUser.id,
       name,
       role: m.role_in_space || 'member',
-      status: 'active', // MOCK — Payment status not yet available from API
+      status: 'active',
       avatar: name.charAt(0).toUpperCase(),
       avatarColor: '#6366f1',
     };
@@ -87,7 +148,16 @@ export default function DashboardPage() {
         </div>
 
         <div className={styles.metricsWrapper}>
-          <OverviewMetrics />
+          <OverviewMetrics 
+            totalBilled={totalBilled}
+            totalPaid={totalPaid}
+            outstandingAmount={outstandingAmount}
+            pendingBillsCount={pendingBillsCount}
+            membersCount={members.length}
+            openIssuesCount={openComplaints.length}
+            inProgressIssuesCount={inProgressComplaints.length}
+            isLoading={isLoadingMetrics}
+          />
         </div>
       </div>
 
@@ -97,8 +167,15 @@ export default function DashboardPage() {
         {/* Left Column: Urgent & Actionable (65%) */}
         <div className={styles.leftCol}>
           <div className={styles.revealSection}>
-            {/* MOCK DATA — Bills/Chores/Complaints APIs not yet implemented */}
-            <NeedsAttention items={needsAttention} />
+            <NeedsAttention 
+              pendingBillsCount={pendingBillsCount}
+              outstandingAmount={outstandingAmount}
+              openComplaintsCount={openComplaints.length}
+              inProgressComplaintsCount={inProgressComplaints.length}
+              pendingChoresCount={pendingChores.length}
+              isLoading={isLoadingMetrics}
+              onNavigate={onNavigate}
+            />
           </div>
 
           <div className={styles.revealSection}>
@@ -110,14 +187,10 @@ export default function DashboardPage() {
         {/* Right Column: Context & Future (35%) */}
         <div className={styles.rightCol}>
           <div className={styles.revealSection}>
-            <QuickActions />
+            <QuickActions onNavigate={onNavigate} />
           </div>
 
           <div className={styles.revealSection}>
-            {/*
-              Members shown here are REAL (from SpaceContext).
-              "Status" (paid/pending) is MOCK until Payment API exists.
-            */}
             <ResidentOverview residents={membersForOverview.length > 0 ? membersForOverview : undefined} />
           </div>
 

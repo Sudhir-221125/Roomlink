@@ -30,9 +30,68 @@ const ATTN_ICONS = {
   ),
 };
 
-export default function NeedsAttention({ items }) {
+export default function NeedsAttention({ 
+  pendingBillsCount = 0, 
+  outstandingAmount = 0, 
+  openComplaintsCount = 0, 
+  inProgressComplaintsCount = 0,
+  pendingChoresCount = 0,
+  isLoading = false,
+  onNavigate
+}) {
   const { showToast } = useToast();
-  if (!items || items.length === 0) {
+  
+  if (isLoading) {
+    return (
+      <section className={styles.section}>
+        <h2 className={styles.title}>Needs Attention</h2>
+        <div className={styles.emptyState}>
+           <p>Loading items...</p>
+        </div>
+      </section>
+    );
+  }
+
+  const items = [];
+
+  if (pendingBillsCount > 0) {
+    items.push({
+      id: 'attn-bills',
+      type: 'bills',
+      title: `${pendingBillsCount} ${pendingBillsCount === 1 ? 'bill' : 'bills'} unpaid`,
+      description: `₹${outstandingAmount.toLocaleString()} pending to be collected`,
+      severity: 'warning',
+      action: 'Review Bills',
+      navTarget: 'rent'
+    });
+  }
+
+  if (openComplaintsCount > 0 || inProgressComplaintsCount > 0) {
+    const total = openComplaintsCount + inProgressComplaintsCount;
+    items.push({
+      id: 'attn-complaints',
+      type: 'complaint',
+      title: `${total} active ${total === 1 ? 'complaint' : 'complaints'}`,
+      description: `${openComplaintsCount} open, ${inProgressComplaintsCount} in progress`,
+      severity: 'danger',
+      action: 'View Issues',
+      navTarget: 'complaints'
+    });
+  }
+
+  if (pendingChoresCount > 0) {
+    items.push({
+      id: 'attn-chores',
+      type: 'chores',
+      title: `${pendingChoresCount} pending ${pendingChoresCount === 1 ? 'chore' : 'chores'}`,
+      description: 'Pending chores need attention',
+      severity: 'warning',
+      action: 'View Chores',
+      navTarget: 'chores'
+    });
+  }
+
+  if (items.length === 0) {
     return (
       <section className={styles.section}>
         <h2 className={styles.title}>Needs Attention</h2>
@@ -59,12 +118,15 @@ export default function NeedsAttention({ items }) {
             </div>
             <button 
               className={styles.actionBtn}
-              onClick={() => showToast(
-                item.type === 'overdue' ? 'Reminder sent' : `Reviewing: ${item.title}`,
-                item.type === 'overdue' ? 'success' : 'info'
-              )}
+              onClick={() => {
+                if (onNavigate && item.navTarget) {
+                  onNavigate(item.navTarget);
+                } else {
+                  showToast(`Reviewing: ${item.title}`, 'info');
+                }
+              }}
             >
-              {item.type === 'overdue' ? 'Send Reminder' : 'Review'}
+              {item.action || 'Review'}
             </button>
           </div>
         ))}

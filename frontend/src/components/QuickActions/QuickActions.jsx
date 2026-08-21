@@ -1,17 +1,15 @@
 import styles from './QuickActions.module.css';
-import { useToast } from '../../contexts/ToastContext';
 
 const actions = [
-  { id: 'add-res', label: 'Add Resident', icon: '👤' },
-  { id: 'add-room', label: 'Add Room', icon: '🚪' },
-  { id: 'rec-pay', label: 'Record Payment', icon: '💸' },
-  { id: 'add-chore', label: 'Create Chore', icon: '🧹' },
-  { id: 'add-rem', label: 'Add Reminder', icon: '📅' },
-  { id: 'rep-iss', label: 'Report Issue', icon: '⚠️' },
+  { id: 'add-res', label: 'Add Member', icon: '👤', target: 'members' },
+  { id: 'create-bill', label: 'Create Bill', icon: '📄', target: 'bills' },
+  { id: 'rec-pay', label: 'Record Payment', icon: '💸', target: 'rent' },
+  { id: 'add-chore', label: 'Create Chore', icon: '🧹', target: 'chores' },
+  { id: 'rep-iss', label: 'Report Issue', icon: '⚠️', target: 'complaints' },
+  { id: 'settings', label: 'Space Settings', icon: '⚙️', target: 'settings' },
 ];
 
-export default function QuickActions() {
-  const { showToast } = useToast();
+export default function QuickActions({ onNavigate }) {
   return (
     <section className={styles.section} aria-label="Quick Actions">
       <h2 className={styles.title}>Quick Actions</h2>
@@ -20,7 +18,7 @@ export default function QuickActions() {
           <button 
             key={action.id} 
             className={styles.actionBtn}
-            onClick={() => showToast(`Action "${action.label}" coming soon`, 'info')}
+            onClick={() => onNavigate && onNavigate(action.target)}
           >
             <span className={styles.icon}>{action.icon}</span>
             <span className={styles.label}>{action.label}</span>
