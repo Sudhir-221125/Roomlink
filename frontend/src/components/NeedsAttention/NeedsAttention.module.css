@@ -23,17 +23,20 @@
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-4);
-  background: #fff;
-  border: 1px solid var(--color-border);
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
+  border: var(--glass-border);
   border-left-width: 4px;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: var(--glass-card-shadow);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  background: var(--glass-card-hover-bg);
+  box-shadow: var(--glass-card-hover-shadow);
 }
 
 /* Severities */
@@ -90,8 +93,10 @@
 }
 
 .actionBtn {
-  background: #fff;
-  border: 1px solid var(--color-border);
+  background: var(--glass-card-hover-bg);
+  backdrop-filter: var(--glass-control-blur);
+  -webkit-backdrop-filter: var(--glass-control-blur);
+  border: var(--glass-border);
   color: var(--color-text);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
@@ -101,13 +106,15 @@
   transition: all var(--transition-fast);
 }
 .actionBtn:hover {
-  border-color: var(--color-heading);
+  background: var(--color-surface);
   color: var(--color-heading);
 }
 
 .emptyState {
-  background: #fff;
-  border: 1px dashed var(--color-border);
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
+  border: 1px dashed rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-md);
   padding: var(--space-6);
   text-align: center;

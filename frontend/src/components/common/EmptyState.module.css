@@ -5,7 +5,9 @@
   justify-content: center;
   padding: 4rem 2rem;
   text-align: center;
-  background-color: var(--surface-0);
+  background-color: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
   border-radius: var(--radius-lg);
   border: 1px dashed var(--border-color);
   margin: 2rem 0;

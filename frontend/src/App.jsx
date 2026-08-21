@@ -33,7 +33,6 @@ import RentPage from './pages/Rent/RentPage';
 import BillsPage from './pages/Bills/BillsPage';
 import ChoresPage from './pages/Chores/ChoresPage';
 import ComplaintsPage from './pages/Complaints/ComplaintsPage';
-import GuestsPage from './pages/Guests/GuestsPage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
 import SettingsPage from './pages/Settings/SettingsPage';
 
@@ -45,7 +44,6 @@ const IMPLEMENTED_PAGES = new Set([
   'bills',
   'chores',
   'complaints',
-  'guests',
   'notifications',
   'settings',
 ]);
@@ -86,13 +84,12 @@ function AppInner() {
   function renderAppPage() {
     if (IMPLEMENTED_PAGES.has(activePage)) {
       switch (activePage) {
-        case 'overview':       return <DashboardPage />;
+        case 'overview':       return <DashboardPage onNavigate={setActivePage} />;
         case 'members':        return <MembersPage />;
         case 'rent':           return <RentPage />;
         case 'bills':          return <BillsPage />;
         case 'chores':         return <ChoresPage />;
         case 'complaints':     return <ComplaintsPage />;
-        case 'guests':         return <GuestsPage />;
         case 'notifications':  return <NotificationsPage />;
         case 'settings':       return <SettingsPage />;
         default: return null;

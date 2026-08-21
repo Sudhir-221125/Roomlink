@@ -52,7 +52,7 @@ export default function CreateSpaceModal({ onClose, onSuccess, showToast }) {
     }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }} onClick={onClose} />
       <div style={{
-        position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+        position: 'relative', background: 'var(--glass-overlay-bg)', backdropFilter: 'var(--glass-overlay-blur)', WebkitBackdropFilter: 'var(--glass-overlay-blur)', border: 'var(--glass-border)', borderRadius: 'var(--radius-lg)',
         padding: 'var(--space-6)', width: '100%', maxWidth: 440, boxShadow: 'var(--shadow-xl)',
       }}>
         <h2 style={{ marginBottom: 'var(--space-2)', fontSize: 'var(--text-lg)', fontWeight: 600 }}>Create New Space</h2>

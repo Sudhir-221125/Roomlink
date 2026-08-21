@@ -53,7 +53,9 @@
 .card {
   width: 100%;
   max-width: 600px;
-  background: #fff;
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--color-border);
@@ -120,7 +122,9 @@
 }
 
 .roleCard {
-  background: #fff;
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);

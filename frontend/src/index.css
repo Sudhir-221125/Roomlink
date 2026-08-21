@@ -9,55 +9,55 @@
      1. COLOR SYSTEM
      ---------------------------------------------------- */
   
-  /* --- Primary: Sage / Forest Green (Trust, Calm, Premium) --- */
-  --brand-50:  #f2f6f5;
-  --brand-100: #e0ece7;
-  --brand-200: #c2dad0;
-  --brand-300: #9abfae;
-  --brand-400: #71a08b;
-  --brand-500: #50836c;
-  --brand-600: #3c6853;
-  --brand-700: #315343; /* Main Primary */
-  --brand-800: #2a4337; /* Primary Hover */
-  --brand-900: #23372f;
+  /* --- Primary: Emerald / Forest Green --- */
+  --brand-50:  #e6f0ec;
+  --brand-100: #d0e1da;
+  --brand-200: #a1c4b5;
+  --brand-300: #73a690;
+  --brand-400: #44896c;
+  --brand-500: #2F6B58;
+  --brand-600: #245B49; /* Main Primary Action */
+  --brand-700: #1b4437;
+  --brand-800: #122d24;
+  --brand-900: #091612;
 
-  /* --- Neutral Scale (Warm Stone / Charcoal) --- */
-  --neutral-50:  #fcfbfa; /* App Background */
-  --neutral-100: #f5f4f1; /* Secondary Surface */
-  --neutral-200: #e8e6e1; /* Borders / Dividers */
-  --neutral-300: #d4d1cb; /* Strong Borders */
-  --neutral-400: #a39f98; /* Muted Text */
-  --neutral-500: #7a7671; /* Secondary Text */
-  --neutral-600: #5c5854;
-  --neutral-700: #45413e;
-  --neutral-800: #2b2826;
-  --neutral-900: #1a1817; /* Main Text / Headings */
+  /* --- Base Ambient Colors (Light Cool Gray / Blue-White) --- */
+  --neutral-50:  #f2f6f5; /* Primary Background */
+  --neutral-100: #eef4f3;
+  --neutral-200: #dce5e3;
+  --neutral-300: #bac7c4;
+  --neutral-400: #8a9692; /* Muted Text */
+  --neutral-500: #66736f; /* Secondary Text */
+  --neutral-600: #4a5451;
+  --neutral-700: #333937;
+  --neutral-800: #1f2322;
+  --neutral-900: #17211E; /* Primary Text */
 
   /* --- Semantic Colors --- */
-  --color-success-bg:   #edf7ed;
+  --color-success-bg:   rgba(46, 125, 50, 0.1);
   --color-success-text: #2e7d32;
-  --color-warning-bg:   #fff7e6;
+  --color-warning-bg:   rgba(217, 119, 6, 0.1);
   --color-warning-text: #d97706;
-  --color-danger-bg:    #fce8e8;
+  --color-danger-bg:    rgba(198, 40, 40, 0.1);
   --color-danger-text:  #c62828;
-  --color-info-bg:      #eef4ff;
+  --color-info-bg:      rgba(30, 64, 175, 0.1);
   --color-info-text:    #1e40af;
 
   /* --- Mapped Aliases --- */
   --color-bg:          var(--neutral-50);
-  --color-surface:     #ffffff;
-  --color-surface-2:   var(--neutral-100);
-  --color-border:      var(--neutral-200);
-  --color-border-2:    var(--neutral-300);
+  --color-surface:     rgba(255, 255, 255, 0.45);
+  --color-surface-2:   rgba(255, 255, 255, 0.60);
+  --color-border:      rgba(255, 255, 255, 0.65);
+  --color-border-2:    rgba(70, 100, 90, 0.12);
   
-  --color-text:        var(--neutral-800);
+  --color-text:        var(--neutral-900);
   --color-text-muted:  var(--neutral-500);
   --color-text-faint:  var(--neutral-400);
   --color-heading:     var(--neutral-900);
   
-  --color-primary:       var(--brand-700);
-  --color-primary-hover: var(--brand-800);
-  --color-primary-bg:    var(--brand-50);
+  --color-primary:       var(--brand-600);
+  --color-primary-hover: var(--brand-700);
+  --color-primary-bg:    rgba(36, 91, 73, 0.1);
 
   /* Mapping for legacy components */
   --color-success: var(--color-success-text);
@@ -135,19 +135,56 @@
   /* ----------------------------------------------------
      4. RADII & SHADOWS (Premium, Subtle)
      ---------------------------------------------------- */
-  /* Avoid overly cartoonish rounded UI; keep it crisp */
-  --radius-sm:  4px;
-  --radius-md:  8px;
-  --radius-lg:  12px;
-  --radius-xl:  16px;
+  /* ----------------------------------------------------
+     4. RADII & SHADOWS (Generous modern rounding)
+     ---------------------------------------------------- */
+  --radius-sm:  8px;
+  --radius-md:  16px;
+  --radius-lg:  24px;
+  --radius-xl:  32px;
   --radius-full: 9999px;
 
-  /* Shadows are very soft, architectural */
-  --shadow-xs:  0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-sm:  0 2px 4px rgba(28, 25, 23, 0.04), 0 1px 2px rgba(28, 25, 23, 0.02);
-  --shadow-md:  0 4px 8px -1px rgba(28, 25, 23, 0.05), 0 2px 4px -1px rgba(28, 25, 23, 0.03);
-  --shadow-lg:  0 10px 20px -3px rgba(28, 25, 23, 0.06), 0 4px 8px -2px rgba(28, 25, 23, 0.04);
-  --shadow-float: 0 12px 32px -4px rgba(28, 25, 23, 0.08); /* For dropdowns/modals */
+  /* ----------------------------------------------------
+     4.5 LIQUID GLASS TOKENS (Hierarchical System)
+     ---------------------------------------------------- */
+  
+  /* Shared Glass Highlights */
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  --glass-highlight-strong: inset 0 1px 0 rgba(255, 255, 255, 0.90);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.65);
+  --glass-border-light: 1px solid rgba(255, 255, 255, 0.40);
+  --glass-border-dark: 1px solid rgba(70, 100, 90, 0.12);
+
+  /* Level 1: Panels (Large containers, e.g., Sidebar, Main areas) */
+  --glass-panel-bg: rgba(255, 255, 255, 0.45);
+  --glass-panel-blur: blur(20px) saturate(140%);
+  --glass-panel-shadow: 0 8px 32px rgba(36, 91, 73, 0.08);
+
+  /* Level 2: Cards (Individual content blocks) */
+  --glass-card-bg: rgba(255, 255, 255, 0.60);
+  --glass-card-hover-bg: rgba(255, 255, 255, 0.72);
+  --glass-card-blur: blur(16px) saturate(150%);
+  --glass-card-shadow: 0 4px 16px rgba(36, 91, 73, 0.05), var(--glass-highlight);
+  --glass-card-hover-shadow: 0 8px 24px rgba(36, 91, 73, 0.08), var(--glass-highlight-strong);
+
+  /* Level 3: Controls (Buttons, Inputs, Selects) */
+  --glass-control-bg: rgba(255, 255, 255, 0.40);
+  --glass-control-hover-bg: rgba(255, 255, 255, 0.55);
+  --glass-control-active-bg: rgba(255, 255, 255, 0.65);
+  --glass-control-blur: blur(12px) saturate(120%);
+  --glass-control-shadow: 0 2px 8px rgba(36, 91, 73, 0.04), var(--glass-highlight);
+  
+  /* Level 4: Overlays (Modals, Dropdowns) */
+  --glass-overlay-bg: rgba(255, 255, 255, 0.72);
+  --glass-overlay-blur: blur(28px) saturate(160%);
+  --glass-overlay-shadow: 0 20px 60px rgba(20, 40, 35, 0.16), var(--glass-highlight-strong);
+
+  /* Dark Glass (Sidebar) */
+  --glass-dark-bg: rgba(25, 40, 35, 0.72);
+  --glass-dark-blur: blur(24px) saturate(140%);
+  --glass-dark-border: 1px solid rgba(255, 255, 255, 0.12);
+  --glass-dark-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+
 
   /* ----------------------------------------------------
      5. MOTION & TRANSITIONS
@@ -300,7 +337,13 @@ html {
 
 body {
   font-family: var(--font-ui);
-  background: var(--color-bg);
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(207, 229, 221, 0.4), transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(221, 234, 242, 0.4), transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(215, 205, 235, 0.25), transparent 50%),
+    radial-gradient(circle at 90% 90%, rgba(180, 220, 207, 0.35), transparent 40%),
+    #F2F6F5;
+  background-attachment: fixed;
   color: var(--color-text);
   line-height: 1.6;
   min-height: 100vh;
@@ -365,25 +408,37 @@ a:hover {
 
 /* ── CARDS ── */
 .rl-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  position: relative;
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
+  border: var(--glass-border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--glass-card-shadow);
+}
+.rl-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 40%);
+  pointer-events: none;
 }
 
 .rl-card-interactive {
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal), background var(--transition-normal);
   cursor: pointer;
 }
 .rl-card-interactive:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--neutral-300);
+  box-shadow: var(--glass-card-hover-shadow);
+  border: var(--glass-border);
+  background: var(--glass-card-hover-bg);
 }
 .rl-card-interactive:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: var(--shadow-sm);
+  transform: translateY(0);
+  box-shadow: var(--glass-card-shadow);
 }
 
 /* ── BUTTONS ── */
@@ -415,23 +470,32 @@ a:hover {
 }
 
 .rl-btn-primary {
-  background: var(--color-primary);
+  background: rgba(36, 91, 73, 0.78);
+  backdrop-filter: var(--glass-control-blur);
+  -webkit-backdrop-filter: var(--glass-control-blur);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(36, 91, 73, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 .rl-btn-primary:hover:not(:disabled) {
-  background: var(--color-primary-hover);
-  box-shadow: 0 4px 12px rgba(49, 83, 67, 0.25);
+  background: rgba(36, 91, 73, 0.90);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(36, 91, 73, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
 }
 
 .rl-btn-secondary {
-  background: var(--neutral-100);
+  background: var(--glass-control-bg);
+  backdrop-filter: var(--glass-control-blur);
+  -webkit-backdrop-filter: var(--glass-control-blur);
   color: var(--color-text);
-  border: 1px solid var(--neutral-200);
+  border: var(--glass-border);
+  box-shadow: var(--glass-control-shadow);
 }
 .rl-btn-secondary:hover:not(:disabled) {
-  background: var(--neutral-200);
-  border-color: var(--neutral-300);
+  background: var(--glass-control-hover-bg);
+  box-shadow: 0 4px 16px rgba(36, 91, 73, 0.08), var(--glass-highlight-strong);
+  transform: translateY(-1px);
 }
 
 .rl-btn-outline {
@@ -464,18 +528,22 @@ a:hover {
   font-family: var(--font-ui);
   font-size: var(--text-base);
   color: var(--color-heading);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--glass-control-bg);
+  backdrop-filter: var(--glass-control-blur);
+  -webkit-backdrop-filter: var(--glass-control-blur);
+  border: var(--glass-border);
   border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 .rl-input::placeholder {
-  color: var(--neutral-400);
+  color: var(--neutral-500);
 }
 .rl-input:focus {
   outline: none;
-  border-color: var(--brand-400);
-  box-shadow: 0 0 0 3px var(--brand-100);
+  background: var(--glass-control-hover-bg);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 3px rgba(36, 91, 73, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 /* ── BADGES / STATUS ── */
@@ -506,8 +574,10 @@ a:hover {
 
 .rl-dialog-content {
   position: relative;
-  background: var(--color-surface);
+  background: var(--glass-overlay-bg);
+  backdrop-filter: var(--glass-overlay-blur);
+  -webkit-backdrop-filter: var(--glass-overlay-blur);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-float);
-  border: 1px solid var(--color-border);
+  box-shadow: var(--glass-overlay-shadow);
+  border: var(--glass-border);
 }

@@ -7,10 +7,12 @@
   top: calc(100% + 6px);
   right: 0;
   width: 320px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--glass-overlay-bg);
+  backdrop-filter: var(--glass-overlay-blur);
+  -webkit-backdrop-filter: var(--glass-overlay-blur);
+  border: var(--glass-border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--glass-overlay-shadow);
   z-index: 300;
   overflow: hidden;
 }

@@ -152,6 +152,7 @@ export default function DashboardPage({ onNavigate }) {
         {createSpaceOpen && (
           <CreateSpaceModal
             onClose={() => setCreateSpaceOpen(false)}
+            onSuccess={() => fetchDashboardData()}
             showToast={showToast}
           />
         )}

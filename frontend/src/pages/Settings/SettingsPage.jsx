@@ -1,26 +1,34 @@
 import { useState, useEffect } from 'react';
 import styles from './SettingsPage.module.css';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSpace } from '../../contexts/SpaceContext';
+import { useToast } from '../../contexts/ToastContext';
 
 const SECTIONS = [
   { id: 'profile', label: 'Profile' },
-  { id: 'appearance', label: 'Appearance' },
-  { id: 'notifications', label: 'Notifications' },
-  { id: 'preferences', label: 'Preferences' },
-  { id: 'account', label: 'Account' },
-  { id: 'privacy', label: 'Privacy' },
+  { id: 'space', label: 'Space Settings' },
 ];
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState('profile');
   const { user } = useAuth();
+  const { currentSpace, updateCurrentSpace, canManageSpace } = useSpace();
+  const { showToast } = useToast();
   
-  // Mock form state initialized with real user data if available
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '',
   });
+
+  const [spaceData, setSpaceData] = useState({
+    name: currentSpace?.name || '',
+    type: currentSpace?.type || '',
+    address: currentSpace?.address || '',
+    description: currentSpace?.description || '',
+  });
+  
+  const [isSavingSpace, setIsSavingSpace] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -32,13 +40,44 @@ export default function SettingsPage() {
     }
   }, [user]);
 
-  const [appearanceData, setAppearanceData] = useState({
-    theme: 'light',
-    density: 'comfortable',
-  });
+  useEffect(() => {
+    if (currentSpace) {
+      setSpaceData({
+        name: currentSpace.name || '',
+        type: currentSpace.type || '',
+        address: currentSpace.address || '',
+        description: currentSpace.description || '',
+      });
+    }
+  }, [currentSpace]);
 
   const handleProfileChange = (e) => {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
+  };
+  
+  const handleSpaceChange = (e) => {
+    setSpaceData({ ...spaceData, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveSpace = async () => {
+    if (!spaceData.name.trim()) {
+      showToast('Space name is required', 'error');
+      return;
+    }
+    setIsSavingSpace(true);
+    try {
+      await updateCurrentSpace({
+        name: spaceData.name.trim(),
+        type: spaceData.type,
+        address: spaceData.address.trim() || undefined,
+        description: spaceData.description.trim() || undefined,
+      });
+      showToast('Space settings updated successfully', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to update space settings', 'error');
+    } finally {
+      setIsSavingSpace(false);
+    }
   };
 
   const renderSectionContent = () => {
@@ -64,67 +103,52 @@ export default function SettingsPage() {
               <input type="tel" name="phone" value={profileData.phone} onChange={handleProfileChange} className={styles.input} />
             </div>
 
-            <button className={styles.saveButton}>Save Changes</button>
+            <button className={styles.saveButton}>Save Profile</button>
           </div>
         );
-      case 'appearance':
+      case 'space':
         return (
           <div className={styles.formSection}>
-            <h2 className={styles.sectionTitle}>Appearance</h2>
-            <p className={styles.sectionDescription}>Customize how RoomLink looks on your device.</p>
+            <h2 className={styles.sectionTitle}>Space Settings</h2>
+            <p className={styles.sectionDescription}>Manage settings for your current space.</p>
             
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Theme</label>
-              <div className={styles.radioGroup}>
-                <label className={styles.radioLabel}>
-                  <input type="radio" name="theme" checked={appearanceData.theme === 'light'} onChange={() => setAppearanceData({...appearanceData, theme: 'light'})} />
-                  Light
-                </label>
-                <label className={styles.radioLabel}>
-                  <input type="radio" name="theme" checked={appearanceData.theme === 'dark'} onChange={() => setAppearanceData({...appearanceData, theme: 'dark'})} />
-                  Dark
-                </label>
-                <label className={styles.radioLabel}>
-                  <input type="radio" name="theme" checked={appearanceData.theme === 'system'} onChange={() => setAppearanceData({...appearanceData, theme: 'system'})} />
-                  System
-                </label>
-              </div>
-            </div>
-          </div>
-        );
-      case 'notifications':
-        return (
-          <div className={styles.formSection}>
-            <h2 className={styles.sectionTitle}>Notification Preferences</h2>
-            <p className={styles.sectionDescription}>Choose what you want to be notified about.</p>
-            
-            <div className={styles.checkboxGroup}>
-              <label className={styles.checkboxLabel}>
-                <input type="checkbox" defaultChecked />
-                <span>Email notifications for new rent payments</span>
-              </label>
-              <label className={styles.checkboxLabel}>
-                <input type="checkbox" defaultChecked />
-                <span>Email notifications for new complaints</span>
-              </label>
-              <label className={styles.checkboxLabel}>
-                <input type="checkbox" defaultChecked />
-                <span>Push notifications for chore reminders</span>
-              </label>
-              <label className={styles.checkboxLabel}>
-                <input type="checkbox" />
-                <span>Weekly summary email</span>
-              </label>
-            </div>
+            {!currentSpace ? (
+              <p>No space selected. Select a space to manage its settings.</p>
+            ) : !canManageSpace() ? (
+              <p>You do not have permission to manage this space's settings.</p>
+            ) : (
+              <>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Space Name *</label>
+                  <input type="text" name="name" value={spaceData.name} onChange={handleSpaceChange} className={styles.input} disabled={isSavingSpace} />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Type</label>
+                  <select name="type" value={spaceData.type} onChange={handleSpaceChange} className={styles.input} disabled={isSavingSpace}>
+                    {['Apartment','PG','Hostel','Shared House','Other'].map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Address</label>
+                  <input type="text" name="address" value={spaceData.address} onChange={handleSpaceChange} className={styles.input} disabled={isSavingSpace} />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Description</label>
+                  <textarea name="description" value={spaceData.description} onChange={handleSpaceChange} className={styles.input} disabled={isSavingSpace} rows={3} style={{ resize: 'vertical' }} />
+                </div>
+
+                <button className={styles.saveButton} onClick={handleSaveSpace} disabled={isSavingSpace}>
+                  {isSavingSpace ? 'Saving…' : 'Save Space Settings'}
+                </button>
+              </>
+            )}
           </div>
         );
       default:
-        return (
-          <div className={styles.formSection}>
-            <h2 className={styles.sectionTitle}>{SECTIONS.find(s => s.id === activeSection)?.label}</h2>
-            <p className={styles.sectionDescription}>Settings for this section are coming soon.</p>
-          </div>
-        );
+        return null;
     }
   };
 

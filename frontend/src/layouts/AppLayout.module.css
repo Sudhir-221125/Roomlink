@@ -34,7 +34,7 @@
   flex: 1;
   margin-top: var(--topbar-height);
   padding: 28px 28px 40px;
-  background: var(--color-bg);
+  background: transparent;
 }
 
 @media (max-width: 768px) {

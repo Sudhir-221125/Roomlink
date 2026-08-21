@@ -48,8 +48,10 @@
 }
 
 .metricCard {
-  background-color: var(--surface-0);
-  border: 1px solid var(--border-color);
+  background-color: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
+  border: var(--glass-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   display: flex;
@@ -76,8 +78,10 @@
 .dangerText { color: #dc2626; }
 
 .progressContainer {
-  background-color: var(--surface-0);
-  border: 1px solid var(--border-color);
+  background-color: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
+  border: var(--glass-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin-bottom: 0.5rem;
@@ -113,9 +117,11 @@
 
 .filterSelect {
   padding: 0.75rem;
-  border: 1px solid var(--border-color);
+  border: var(--glass-border);
   border-radius: var(--radius-md);
-  background-color: var(--surface-0);
+  background-color: var(--glass-control-bg);
+  backdrop-filter: var(--glass-control-blur);
+  -webkit-backdrop-filter: var(--glass-control-blur);
   color: var(--text-primary);
   outline: none;
   min-width: 150px;
@@ -123,8 +129,10 @@
 
 .tableWrapper {
   overflow-x: auto;
-  background-color: var(--surface-0);
-  border: 1px solid var(--border-color);
+  background-color: var(--glass-panel-bg);
+  backdrop-filter: var(--glass-panel-blur);
+  -webkit-backdrop-filter: var(--glass-panel-blur);
+  border: var(--glass-border);
   border-radius: var(--radius-lg);
 }
 

@@ -5,10 +5,12 @@
 .section {
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--glass-card-bg);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--glass-card-shadow);
   overflow: hidden;
   margin-bottom: var(--space-6);
 }

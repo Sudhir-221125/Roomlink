@@ -13,6 +13,7 @@ export default function SignUpPage({ onNavigate }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('resident');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,7 +36,7 @@ export default function SignUpPage({ onNavigate }) {
 
     setIsLoading(true);
     try {
-      await register(name, email, password);
+      await register(name, email, password, role);
       // New user → send to onboarding (space setup)
       onNavigate('onboarding');
     } catch (err) {
@@ -117,6 +118,20 @@ export default function SignUpPage({ onNavigate }) {
             autoComplete="new-password"
             aria-invalid={!!error && error.includes('match')}
           />
+        </div>
+
+        <div className="auth-field">
+          <label htmlFor="signup-role" className="auth-label">I am a...</label>
+          <select
+            id="signup-role"
+            className="auth-input"
+            value={role}
+            onChange={e => setRole(e.target.value)}
+            disabled={isLoading}
+          >
+            <option value="resident">Resident</option>
+            <option value="guest">Guest</option>
+          </select>
         </div>
 
         {error && (

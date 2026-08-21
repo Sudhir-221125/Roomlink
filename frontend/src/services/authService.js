@@ -15,8 +15,8 @@ import api, { setStoredToken } from './api.js';
  * Body: { name, email, password }
  * Returns: { user, token }
  */
-export async function register({ name, email, password }) {
-  const data = await api.post('/auth/register', { name, email, password }, {}, false);
+export async function register({ name, email, password, role }) {
+  const data = await api.post('/auth/register', { name, email, password, role }, {}, false);
   if (data.token) {
     setStoredToken(data.token);
   }

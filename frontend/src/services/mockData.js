@@ -93,7 +93,6 @@ export const searchableItems = [
   { type: 'page', label: 'Bills',       detail: 'Utility bills',      page: 'bills' },
   { type: 'page', label: 'Chores',      detail: 'Task schedules',     page: 'chores' },
   { type: 'page', label: 'Complaints',  detail: 'Issue tracking',     page: 'complaints' },
-  { type: 'page', label: 'Guests',      detail: 'Guest management',   page: 'guests' },
   { type: 'page', label: 'Settings',    detail: 'Configuration',      page: 'settings' },
 ];
 

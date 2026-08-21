@@ -18,7 +18,6 @@ const PAGE_TITLES = {
   bills:         'Bills',
   chores:        'Chores',
   complaints:    'Complaints',
-  guests:        'Guests',
   notifications: 'Notifications',
   settings:      'Settings',
 };

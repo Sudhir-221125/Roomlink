@@ -65,8 +65,8 @@ export function AuthProvider({ children, onSessionExpired }) {
     return data;
   }, []);
 
-  const register = useCallback(async (name, email, password) => {
-    const data = await apiRegister({ name, email, password });
+  const register = useCallback(async (name, email, password, role) => {
+    const data = await apiRegister({ name, email, password, role });
     const resolvedUser = data?.user || data;
     setUser(resolvedUser);
     setIsAuthenticated(true);

@@ -1,7 +1,7 @@
 .tabsContainer {
   display: flex;
   gap: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: var(--glass-border);
   margin-bottom: 1.5rem;
 }
 
