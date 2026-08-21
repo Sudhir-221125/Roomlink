@@ -22,12 +22,25 @@ const paymentSchema = new mongoose.Schema(
     method: {
       type: String,
       required: [true, 'Payment method is required'],
+      enum: {
+        values: ['upi', 'bank_transfer', 'cash'],
+        message: '{VALUE} is not a supported payment method',
+      },
       trim: true,
     },
     transaction_id: {
       type: String,
       default: null,
       trim: true,
+    },
+    status: {
+      type: String,
+      enum: {
+        values: ['pending_verification', 'verified', 'failed'],
+        message: '{VALUE} is not a valid payment status',
+      },
+      default: 'pending_verification',
+      index: true,
     },
     paid_at: {
       type: Date,

@@ -28,10 +28,10 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: {
-        values: ['admin', 'member'],
+        values: ['owner', 'admin', 'resident', 'guest'],
         message: '{VALUE} is not a valid user role',
       },
-      default: 'member',
+      default: 'resident',
     },
     created_at: {
       type: Date,
