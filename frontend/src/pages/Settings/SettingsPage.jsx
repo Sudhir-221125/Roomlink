@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './SettingsPage.module.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 const SECTIONS = [
   { id: 'profile', label: 'Profile' },
@@ -12,13 +13,24 @@ const SECTIONS = [
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState('profile');
+  const { user } = useAuth();
   
-  // Mock form state
+  // Mock form state initialized with real user data if available
   const [profileData, setProfileData] = useState({
-    name: 'Admin User',
-    email: 'admin@roomlink.com',
-    phone: '555-0000',
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
+    }
+  }, [user]);
 
   const [appearanceData, setAppearanceData] = useState({
     theme: 'light',

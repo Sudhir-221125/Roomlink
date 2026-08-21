@@ -1,69 +1,101 @@
 /**
- * RentPage.jsx — now labelled "Payments"
+ * RentPage.jsx — labelled "Payments"
  *
- * In the RoomLink data model:
- *   - Bills  → financial obligations (electricity, water, rent etc.)
- *   - Payments → payments made against Bills
+ * Shows bills with their payments. Uses real APIs:
+ *   GET /api/spaces/:spaceId/bills              — list bills
+ *   GET /api/spaces/:spaceId/bills/:billId/payments — list payments for a bill
+ *   POST /api/spaces/:spaceId/bills/:billId/payments — record a payment
  *
- * There is NO standalone Rent model in the database.
- * This page represents Payments against Bills and will connect to:
- *   - GET /api/spaces/:spaceId/bills (when Bill API is implemented)
- *   - GET /api/bills/:billId/payments (when Payment API is implemented)
- *
- * Current state: 🟡 MOCK DATA — APIs not yet implemented.
+ * There is NO standalone Rent model. This page maps Bill + Payment together.
  */
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './RentPage.module.css';
 import Tabs from '../../components/common/Tabs';
 import Badge from '../../components/common/Badge';
 import { useToast } from '../../contexts/ToastContext';
-
-// 🟡 MOCK DATA — Replace with Bill API when available
-const RENT_METRICS = {
-  expected: 18500,
-  collected: 12300,
-  pending: 4200,
-  overdue: 2000,
-};
-
-// 🟡 MOCK DATA — Replace with Payment API (GET /api/bills/:id/payments)
-const MOCK_PAYMENTS = [
-  { id: 'p1', member: 'Member A', billTitle: 'October Rent', amount: 6200, dueDate: '2024-10-01', status: 'Paid',    paidDate: '2024-09-28' },
-  { id: 'p2', member: 'Member B', billTitle: 'October Rent', amount: 6200, dueDate: '2024-10-01', status: 'Paid',    paidDate: '2024-10-01' },
-  { id: 'p3', member: 'Member C', billTitle: 'October Rent', amount: 6100, dueDate: '2024-10-01', status: 'Overdue', paidDate: null },
-  { id: 'p4', member: 'Member D', billTitle: 'October Rent', amount: 5500, dueDate: '2024-10-01', status: 'Pending', paidDate: null },
-  { id: 'p5', member: 'Member A', billTitle: 'September Rent', amount: 6200, dueDate: '2024-09-01', status: 'Paid',  paidDate: '2024-08-30' },
-  { id: 'p6', member: 'Member B', billTitle: 'September Rent', amount: 6200, dueDate: '2024-09-01', status: 'Paid',  paidDate: '2024-09-02' },
-];
+import { useSpace } from '../../contexts/SpaceContext';
+import { getBills } from '../../services/billService';
+import { getPayments, createPayment } from '../../services/paymentService';
 
 const TABS = [
-  { id: 'current', label: 'Current Month' },
-  { id: 'history', label: 'Payment History' }
+  { id: 'overview', label: 'Bill Overview' },
+  { id: 'payments', label: 'Payment History' },
 ];
 
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatCurrency(amount) {
+  return `₹${Number(amount || 0).toLocaleString()}`;
+}
+
 export default function RentPage() {
-  const [activeTab, setActiveTab] = useState('current');
-  const [statusFilter, setStatusFilter] = useState('All');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [bills, setBills] = useState([]);
+  const [paymentsMap, setPaymentsMap] = useState({}); // billId → Payment[]
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showPayModal, setShowPayModal] = useState(null); // bill object or null
   const { showToast } = useToast();
+  const { currentSpace } = useSpace();
+  const spaceId = currentSpace?._id || currentSpace?.id;
 
-  const filteredPayments = MOCK_PAYMENTS.filter(payment => {
-    const isCurrentMonth = payment.dueDate.startsWith('2024-10');
-    if (activeTab === 'current' && !isCurrentMonth) return false;
-    if (activeTab === 'history' && isCurrentMonth) return false;
-    if (statusFilter !== 'All' && payment.status !== statusFilter) return false;
-    return true;
-  });
+  const fetchData = useCallback(async () => {
+    if (!spaceId) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const billsData = await getBills(spaceId);
+      const billList = Array.isArray(billsData) ? billsData : [];
+      setBills(billList);
 
-  const getStatusVariant = (status) => {
-    switch (status) {
-      case 'Paid':    return 'success';
-      case 'Pending': return 'warning';
-      case 'Overdue': return 'danger';
-      default:        return 'neutral';
+      // Fetch payments for each bill
+      const pMap = {};
+      await Promise.all(
+        billList.map(async (bill) => {
+          try {
+            const payments = await getPayments(spaceId, bill._id);
+            pMap[bill._id] = Array.isArray(payments) ? payments : [];
+          } catch {
+            pMap[bill._id] = [];
+          }
+        })
+      );
+      setPaymentsMap(pMap);
+    } catch (err) {
+      setError(err.message || 'Failed to load data');
+      setBills([]);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [spaceId]);
 
-  const progressPercentage = Math.min((RENT_METRICS.collected / RENT_METRICS.expected) * 100, 100);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // ── Compute summary metrics ──
+  const totalExpected = bills.reduce((sum, b) => sum + (b.amount || 0), 0);
+  const totalPaid = Object.values(paymentsMap).flat().reduce((sum, p) => sum + (p.amount || 0), 0);
+  const totalPending = Math.max(totalExpected - totalPaid, 0);
+  const progressPct = totalExpected > 0 ? Math.min((totalPaid / totalExpected) * 100, 100) : 0;
+
+  // All payments flat list
+  const allPayments = bills.flatMap(bill =>
+    (paymentsMap[bill._id] || []).map(p => ({ ...p, billTitle: bill.title, billDueDate: bill.due_date }))
+  );
+
+  if (!currentSpace) {
+    return (
+      <div className={styles.container}>
+        <div style={{ padding: 'var(--space-8)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+          Select a space from the sidebar to view payments.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -72,117 +104,223 @@ export default function RentPage() {
           <h1 className={styles.title}>Payments</h1>
           <p className={styles.subtitle}>Track bill payments and payment history for your space.</p>
         </div>
-        <button
-          className={styles.primaryButton}
-          onClick={() => showToast('Record payment — coming soon when Bill/Payment APIs are ready', 'info')}
-        >
-          Record Payment
-        </button>
       </header>
-
-      {/* ── API Status Notice ── */}
-      <div style={{
-        background: 'color-mix(in srgb, var(--color-info, #3b82f6) 8%, transparent)',
-        border: '1px solid color-mix(in srgb, var(--color-info, #3b82f6) 30%, transparent)',
-        borderRadius: 'var(--radius-md)',
-        padding: 'var(--space-3) var(--space-4)',
-        marginBottom: 'var(--space-4)',
-        fontSize: 'var(--text-sm)',
-        color: 'var(--color-text-muted)',
-        display: 'flex',
-        gap: 'var(--space-2)',
-        alignItems: 'center',
-      }}>
-        <span>ℹ️</span>
-        <span>
-          Payments are tracked against <strong>Bills</strong> in the database.
-          Bill and Payment APIs are not yet implemented — the figures below are
-          <strong> preview mock data</strong>.
-        </span>
-      </div>
 
       {/* ── Summary Metrics ── */}
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Total Expected</div>
-          <div className={styles.metricValue}>₹{RENT_METRICS.expected.toLocaleString()}</div>
+          <div className={styles.metricLabel}>Total Billed</div>
+          <div className={styles.metricValue}>{formatCurrency(totalExpected)}</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Collected</div>
-          <div className={`${styles.metricValue} ${styles.successText}`}>₹{RENT_METRICS.collected.toLocaleString()}</div>
+          <div className={styles.metricLabel}>Total Paid</div>
+          <div className={`${styles.metricValue} ${styles.successText}`}>{formatCurrency(totalPaid)}</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Pending</div>
-          <div className={`${styles.metricValue} ${styles.warningText}`}>₹{RENT_METRICS.pending.toLocaleString()}</div>
+          <div className={styles.metricLabel}>Remaining</div>
+          <div className={`${styles.metricValue} ${styles.warningText}`}>{formatCurrency(totalPending)}</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>Overdue</div>
-          <div className={`${styles.metricValue} ${styles.dangerText}`}>₹{RENT_METRICS.overdue.toLocaleString()}</div>
+          <div className={styles.metricLabel}>Bills</div>
+          <div className={styles.metricValue}>{bills.length}</div>
         </div>
       </div>
 
       <div className={styles.progressContainer}>
         <div className={styles.progressHeader}>
           <span>Collection Progress</span>
-          <span>{Math.round(progressPercentage)}%</span>
+          <span>{Math.round(progressPct)}%</span>
         </div>
         <div className={styles.progressBarBg}>
-          <div className={styles.progressBarFill} style={{ width: `${progressPercentage}%` }} />
+          <div className={styles.progressBarFill} style={{ width: `${progressPct}%` }} />
         </div>
       </div>
 
-      <Tabs tabs={TABS} activeTab={activeTab} onChange={(tab) => {
-        setActiveTab(tab);
-        setStatusFilter('All');
-      }} />
+      <Tabs tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
 
-      <div className={styles.controls}>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className={styles.filterSelect}
-        >
-          <option value="All">All Statuses</option>
-          <option value="Paid">Paid</option>
-          <option value="Pending">Pending</option>
-          <option value="Overdue">Overdue</option>
-        </select>
+      <div style={{ marginTop: 'var(--space-4)' }}>
+        {isLoading ? (
+          <div style={{ padding: 'var(--space-8)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+            Loading payments data…
+          </div>
+        ) : error ? (
+          <div style={{ padding: 'var(--space-8)', textAlign: 'center', color: 'var(--color-danger)' }}>
+            {error}
+          </div>
+        ) : activeTab === 'overview' ? (
+          /* ── Bill Overview ── */
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Bill</th>
+                  <th>Amount</th>
+                  <th>Due Date</th>
+                  <th>Paid</th>
+                  <th>Remaining</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bills.length > 0 ? bills.map(bill => {
+                  const payments = paymentsMap[bill._id] || [];
+                  const paidSum = payments.reduce((s, p) => s + (p.amount || 0), 0);
+                  const remaining = Math.max(bill.amount - paidSum, 0);
+                  const isPaid = remaining === 0;
+                  return (
+                    <tr key={bill._id}>
+                      <td className={styles.residentName}>{bill.title}</td>
+                      <td className={styles.amount}>{formatCurrency(bill.amount)}</td>
+                      <td>{formatDate(bill.due_date)}</td>
+                      <td>
+                        <Badge variant={isPaid ? 'success' : 'warning'}>
+                          {formatCurrency(paidSum)}
+                        </Badge>
+                      </td>
+                      <td className={styles.amount}>
+                        {isPaid ? '✓ Paid' : formatCurrency(remaining)}
+                      </td>
+                      <td>
+                        {!isPaid && (
+                          <button
+                            className={styles.textButton}
+                            onClick={() => setShowPayModal(bill)}
+                          >
+                            Record Payment
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                }) : (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--color-text-muted)' }}>
+                      No bills found. Create a bill from the Bills page first.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          /* ── Payment History ── */
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Paid By</th>
+                  <th>Bill</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Paid On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allPayments.length > 0 ? allPayments.map(payment => (
+                  <tr key={payment._id}>
+                    <td className={styles.residentName}>
+                      {payment.paid_by?.name || payment.paid_by?.email || 'Unknown'}
+                    </td>
+                    <td>{payment.billTitle}</td>
+                    <td className={styles.amount}>{formatCurrency(payment.amount)}</td>
+                    <td>{payment.method || '—'}</td>
+                    <td className={styles.dateCell}>{formatDate(payment.paid_at)}</td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="5" style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--color-text-muted)' }}>
+                      No payments recorded yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Member</th>
-              <th>Bill</th>
-              <th>Amount</th>
-              <th>Due Date</th>
-              <th>Status</th>
-              <th>Paid On</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPayments.map(payment => (
-              <tr key={payment.id}>
-                <td className={styles.residentName}>{payment.member}</td>
-                <td>{payment.billTitle}</td>
-                <td className={styles.amount}>₹{payment.amount.toLocaleString()}</td>
-                <td>{payment.dueDate}</td>
-                <td><Badge variant={getStatusVariant(payment.status)}>{payment.status}</Badge></td>
-                <td className={styles.dateCell}>{payment.paidDate || '—'}</td>
-                <td>
-                  <button
-                    className={styles.textButton}
-                    onClick={() => showToast('Payment details — coming soon when API is ready', 'info')}
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {showPayModal && (
+        <RecordPaymentModal
+          spaceId={spaceId}
+          bill={showPayModal}
+          onClose={() => setShowPayModal(null)}
+          onCreated={() => { setShowPayModal(null); fetchData(); }}
+          showToast={showToast}
+        />
+      )}
+    </div>
+  );
+}
+
+// ── Record Payment Modal ─────────────────────────────────────────────────────
+function RecordPaymentModal({ spaceId, bill, onClose, onCreated, showToast }) {
+  const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState('');
+  const [transactionId, setTransactionId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!amount || Number(amount) <= 0) { showToast('Valid amount is required', 'error'); return; }
+    if (!method.trim()) { showToast('Payment method is required', 'error'); return; }
+
+    setIsSubmitting(true);
+    try {
+      await createPayment(spaceId, bill._id, {
+        amount: Number(amount),
+        method: method.trim(),
+        transaction_id: transactionId.trim() || undefined,
+      });
+      showToast('Payment recorded successfully', 'success');
+      onCreated();
+    } catch (err) {
+      showToast(err.message || 'Failed to record payment', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 1000,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }} onClick={onClose} />
+      <div style={{
+        position: 'relative', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-6)', width: '100%', maxWidth: 440, boxShadow: 'var(--shadow-xl)',
+      }}>
+        <h2 style={{ marginBottom: 'var(--space-2)', fontSize: 'var(--text-lg)', fontWeight: 600 }}>Record Payment</h2>
+        <p style={{ marginBottom: 'var(--space-4)', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
+          For: {bill.title} ({formatCurrency(bill.amount)})
+        </p>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div className="auth-field">
+            <label className="auth-label">Amount (₹) *</label>
+            <input className="auth-input" type="number" min="0" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} disabled={isSubmitting} placeholder="0.00" />
+          </div>
+          <div className="auth-field">
+            <label className="auth-label">Payment Method *</label>
+            <select className="auth-input" value={method} onChange={e => setMethod(e.target.value)} disabled={isSubmitting}>
+              <option value="">Select method…</option>
+              <option value="cash">Cash</option>
+              <option value="upi">UPI</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="card">Card</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div className="auth-field">
+            <label className="auth-label">Transaction ID <span style={{color:'var(--color-text-muted)', fontWeight:400}}>(optional)</span></label>
+            <input className="auth-input" value={transactionId} onChange={e => setTransactionId(e.target.value)} disabled={isSubmitting} placeholder="e.g. UPI ref number" />
+          </div>
+          <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+            <button type="button" className="rl-btn" onClick={onClose} disabled={isSubmitting}>Cancel</button>
+            <button type="submit" className="rl-btn rl-btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Recording…' : 'Record Payment'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

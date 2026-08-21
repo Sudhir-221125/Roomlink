@@ -150,38 +150,7 @@ export const needsAttention = [
   },
 ];
 
-// ── 🟡 MOCK DATA: Notifications (dropdown) ──────────────────────────────────
-// TODO: Replace with GET /api/notifications when Notification API is implemented
-export const mockNotifications = [
-  {
-    id: 'notif-1',
-    title: 'Bill payment received',
-    body: 'A member paid a bill',
-    time: '2 hours ago',
-    read: false,
-  },
-  {
-    id: 'notif-2',
-    title: 'New complaint filed',
-    body: 'A complaint was raised in your space',
-    time: '5 hours ago',
-    read: false,
-  },
-  {
-    id: 'notif-3',
-    title: 'Chore completed',
-    body: 'A member finished a chore',
-    time: 'Yesterday',
-    read: true,
-  },
-  {
-    id: 'notif-4',
-    title: 'Bill added',
-    body: 'A new bill has been added for this month',
-    time: '2 days ago',
-    read: true,
-  },
-];
+
 
 // ── 🟡 MOCK DATA: Searchable items ───────────────────────────────────────────
 // Room-type entries removed (no Room model in DB).

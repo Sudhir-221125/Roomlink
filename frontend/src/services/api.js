@@ -9,7 +9,7 @@
  * - Handles 401 by clearing stored auth and signalling session expiry
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
 
