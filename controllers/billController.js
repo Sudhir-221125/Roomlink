@@ -94,7 +94,9 @@ const updateBill = catchAsync(async (req, res) => {
     throw new ApiError(404, 'Bill not found in this space.');
   }
 
-  // Only allow updatable fields — never space_id or created_by
+  let hasAmountChanged = false;
+
+  // Only allow updatable fields — never space_id, created_by or status (derived)
   const { title, amount, due_date } = req.body;
 
   if (title !== undefined) bill.title = title;
@@ -104,6 +106,7 @@ const updateBill = catchAsync(async (req, res) => {
       throw new ApiError(400, 'Amount must be a non-negative number.');
     }
     bill.amount = amount;
+    hasAmountChanged = true;
   }
 
   if (due_date !== undefined) {
@@ -112,6 +115,19 @@ const updateBill = catchAsync(async (req, res) => {
       throw new ApiError(400, 'Due date must be a valid date.');
     }
     bill.due_date = parsedDate;
+  }
+
+  if (hasAmountChanged) {
+    const verifiedPayments = await Payment.find({ bill_id: bill._id, status: 'verified' });
+    const totalPaid = verifiedPayments.reduce((sum, p) => sum + p.amount, 0);
+
+    if (totalPaid >= bill.amount) {
+      bill.status = 'paid';
+    } else if (totalPaid > 0) {
+      bill.status = 'partial';
+    } else {
+      bill.status = 'unpaid';
+    }
   }
 
   await bill.save();

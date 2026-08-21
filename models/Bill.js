@@ -22,6 +22,15 @@ const billSchema = new mongoose.Schema(
       type: Date,
       required: [true, 'Due date is required'],
     },
+    status: {
+      type: String,
+      enum: {
+        values: ['unpaid', 'partial', 'paid'],
+        message: '{VALUE} is not a valid bill status',
+      },
+      default: 'unpaid',
+      index: true,
+    },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
