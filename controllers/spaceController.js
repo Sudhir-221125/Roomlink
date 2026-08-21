@@ -4,6 +4,7 @@ const Bill = require('../models/Bill');
 const Payment = require('../models/Payment');
 const Chore = require('../models/Chore');
 const Complaint = require('../models/Complaint');
+const Guest = require('../models/Guest');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { ok, created } = require('../utils/apiResponse');
@@ -141,9 +142,12 @@ const deleteSpace = catchAsync(async (req, res) => {
   // 5. Memberships — have space_id
   await Membership.deleteMany({ space_id: spaceId });
 
-  // 6. Notifications — do NOT have space_id (only user_id). Left untouched.
+  // 6. Guests — have space_id
+  await Guest.deleteMany({ space_id: spaceId });
 
-  // 7. Delete the space itself
+  // 7. Notifications — do NOT have space_id (only user_id). Left untouched.
+
+  // 8. Delete the space itself
   await Space.findByIdAndDelete(spaceId);
 
   return ok(res, 'Space and all associated data deleted successfully.');

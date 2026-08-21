@@ -136,9 +136,34 @@ const updateChore = catchAsync(async (req, res) => {
     throw new ApiError(404, 'Chore not found in this space.');
   }
 
+  const role = req.membership.role_in_space;
+  const isOwnerOrAdmin = role === 'owner' || role === 'admin';
+
   // Only allow updatable fields — never space_id or created_by
   const { title, description, assigned_to, due_date, status } = req.body;
 
+  // ── Member authorization ──
+  // Members can ONLY update the status of chores assigned to them.
+  if (!isOwnerOrAdmin) {
+    const isAssignee =
+      chore.assigned_to && chore.assigned_to.toString() === req.user._id.toString();
+
+    if (!isAssignee) {
+      throw new ApiError(403, 'You can only update chores assigned to you.');
+    }
+
+    // Members may only change status — reject any other field
+    if (
+      title !== undefined ||
+      description !== undefined ||
+      assigned_to !== undefined ||
+      due_date !== undefined
+    ) {
+      throw new ApiError(403, 'Members can only update the status of their assigned chores.');
+    }
+  }
+
+  // ── Field updates (owner/admin or authorised member for status) ──
   if (title !== undefined) {
     if (!title.trim()) {
       throw new ApiError(400, 'Title cannot be empty.');

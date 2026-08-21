@@ -4,6 +4,7 @@ const User = require('../models/User');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { ok, created } = require('../utils/apiResponse');
+const { createNotification } = require('../utils/notifyHelper');
 
 // ─────────────────────────────────────────────
 // GET /api/spaces/:spaceId/members
@@ -78,6 +79,14 @@ const addMember = catchAsync(async (req, res) => {
   // 7. Populate user info for the response
   await member.populate('user_id', 'name email phone');
 
+  // 8. Notify the added user
+  createNotification({
+    user_id: targetUser._id,
+    type: 'member',
+    title: 'Added to space',
+    message: `You have been added to the space "${req.space.name}" as ${targetRole}.`,
+  });
+
   return created(res, 'Member added successfully.', { member });
 });
 
@@ -124,6 +133,14 @@ const removeMember = catchAsync(async (req, res) => {
   // 6. Soft-deactivate
   targetMembership.is_active = false;
   await targetMembership.save();
+
+  // 7. Notify the removed user
+  createNotification({
+    user_id: userId,
+    type: 'member',
+    title: 'Removed from space',
+    message: `You have been removed from the space "${req.space.name}".`,
+  });
 
   return ok(res, 'Member removed from the space.');
 });

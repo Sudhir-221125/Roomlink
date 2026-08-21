@@ -41,7 +41,7 @@ const sanitiseUser = (user) => {
 // POST /api/auth/register
 // ─────────────────────────────────────────────
 const register = catchAsync(async (req, res) => {
-  const { name, email, phone, password } = req.body;
+  const { name, email, phone, password, role } = req.body;
 
   // 1. Validate required fields
   if (!name || !email || !password) {
@@ -53,21 +53,29 @@ const register = catchAsync(async (req, res) => {
     throw new ApiError(400, 'Password must be at least 6 characters long.');
   }
 
-  // 3. Hash password
+  // 3. Validate role — only 'resident' and 'guest' are self-assignable during signup
+  const SELF_ASSIGNABLE_ROLES = ['resident', 'guest'];
+  const userRole = role || 'resident';
+  if (!SELF_ASSIGNABLE_ROLES.includes(userRole)) {
+    throw new ApiError(400, `Role must be one of: ${SELF_ASSIGNABLE_ROLES.join(', ')}. Cannot self-assign '${role}'.`);
+  }
+
+  // 4. Hash password
   const password_hash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
-  // 4. Create user (duplicate email → MongoDB 11000 → errorHandler handles it)
+  // 5. Create user (duplicate email → MongoDB 11000 → errorHandler handles it)
   const user = await User.create({
     name,
     email,
     phone: phone || undefined,
     password_hash,
+    role: userRole,
   });
 
-  // 5. Generate token
+  // 6. Generate token
   const token = generateToken(user);
 
-  // 6. Respond
+  // 7. Respond
   return created(res, 'User registered successfully.', {
     user: sanitiseUser(user),
     token,
@@ -115,4 +123,40 @@ const getMe = catchAsync(async (req, res) => {
   return ok(res, 'User profile retrieved.', { user: req.user });
 });
 
-module.exports = { register, login, getMe };
+// ─────────────────────────────────────────────
+// PATCH /api/auth/me
+// ─────────────────────────────────────────────
+const updateMe = catchAsync(async (req, res) => {
+  const { name, phone, password } = req.body;
+
+  // Fetch the full user so we can save (req.user excludes password_hash)
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, 'User not found.');
+  }
+
+  // Only allow safe fields — never email or role via this endpoint
+  if (name !== undefined) {
+    if (!name.trim()) {
+      throw new ApiError(400, 'Name cannot be empty.');
+    }
+    user.name = name.trim();
+  }
+
+  if (phone !== undefined) {
+    user.phone = phone || undefined;
+  }
+
+  if (password !== undefined) {
+    if (password.length < 6) {
+      throw new ApiError(400, 'Password must be at least 6 characters long.');
+    }
+    user.password_hash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+  }
+
+  await user.save();
+
+  return ok(res, 'Profile updated successfully.', { user: sanitiseUser(user) });
+});
+
+module.exports = { register, login, getMe, updateMe };

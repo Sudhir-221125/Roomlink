@@ -53,4 +53,7 @@ router.use('/:spaceId/chores', require('./choreRoutes'));
 // Nest complaint routes under /api/spaces/:spaceId/complaints
 router.use('/:spaceId/complaints', require('./complaintRoutes'));
 
+// Nest guest routes under /api/spaces/:spaceId/guests
+router.use('/:spaceId/guests', require('./guestRoutes'));
+
 module.exports = router;

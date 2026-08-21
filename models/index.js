@@ -6,6 +6,7 @@ const Payment = require('./Payment');
 const Chore = require('./Chore');
 const Complaint = require('./Complaint');
 const Notification = require('./Notification');
+const Guest = require('./Guest');
 
 module.exports = {
   User,
@@ -16,4 +17,5 @@ module.exports = {
   Chore,
   Complaint,
   Notification,
+  Guest,
 };

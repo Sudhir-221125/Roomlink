@@ -36,10 +36,11 @@ router.get(
   getChore
 );
 
-// PATCH /api/spaces/:spaceId/chores/:choreId — update chore (owner/admin)
+// PATCH /api/spaces/:spaceId/chores/:choreId — update chore
+//   owner/admin: all fields; member: only status on assigned chores
 router.patch(
   '/:choreId',
-  requireSpaceMembership('owner', 'admin'),
+  requireSpaceMembership('owner', 'admin', 'member'),
   updateChore
 );
 
