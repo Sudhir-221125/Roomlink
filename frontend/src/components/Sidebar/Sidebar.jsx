@@ -11,6 +11,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSpace } from '../../contexts/SpaceContext';
+import { useToast } from '../../contexts/ToastContext';
+import CreateSpaceModal from '../CreateSpaceModal/CreateSpaceModal';
 import styles from './Sidebar.module.css';
 
 // ── Nav item definitions ─────────────────────────────────────────────────────
@@ -128,7 +130,9 @@ const NAV_ITEMS = [
 // ── Space Selector ───────────────────────────────────────────────────────────
 function SpaceSelector({ collapsed }) {
   const { spaces, currentSpace, selectSpace, isLoadingSpaces } = useSpace();
+  const { showToast } = useToast();
   const [open, setOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -148,24 +152,17 @@ function SpaceSelector({ collapsed }) {
     );
   }
 
-  if (!currentSpace) {
-    return (
-      <div className={styles.spaceSelector} title="No space selected">
-        <div className={styles.spaceSelectorIcon}>＋</div>
-        {!collapsed && <span className={styles.spaceSelectorLabel}>No space</span>}
-      </div>
-    );
-  }
-
-  const spaceInitial = currentSpace.name?.charAt(0).toUpperCase() || '?';
+  const spaceInitial = currentSpace?.name?.charAt(0).toUpperCase() || '＋';
+  const displayTitle = currentSpace?.name || 'No space selected';
+  const displayLabel = currentSpace?.name || 'No space';
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         className={styles.spaceSelector}
         onClick={() => setOpen(v => !v)}
-        title={currentSpace.name}
-        aria-label={`Current space: ${currentSpace.name}. Click to switch.`}
+        title={displayTitle}
+        aria-label={`Current space: ${displayTitle}. Click to switch.`}
         aria-expanded={open}
       >
         <div className={styles.spaceSelectorIcon}>{spaceInitial}</div>
@@ -173,9 +170,9 @@ function SpaceSelector({ collapsed }) {
           <>
             <div style={{ flex: 1, textAlign: 'left', overflow: 'hidden' }}>
               <div className={styles.spaceSelectorLabel} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {currentSpace.name}
+                {displayLabel}
               </div>
-              {currentSpace.type && (
+              {currentSpace?.type && (
                 <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', lineHeight: 1 }}>{currentSpace.type}</div>
               )}
             </div>
@@ -186,11 +183,11 @@ function SpaceSelector({ collapsed }) {
         )}
       </button>
 
-      {open && !collapsed && spaces.length > 0 && (
+      {open && !collapsed && (
         <div className={styles.spaceDropdown} role="listbox" aria-label="Switch space">
           {spaces.map(space => {
             const id = space._id || space.id;
-            const isSelected = id === (currentSpace._id || currentSpace.id);
+            const isSelected = id === (currentSpace?._id || currentSpace?.id);
             return (
               <button
                 key={id}
@@ -212,7 +209,24 @@ function SpaceSelector({ collapsed }) {
               </button>
             );
           })}
+          
+          <button
+            className={styles.spaceOption}
+            onClick={() => { setCreateModalOpen(true); setOpen(false); }}
+            style={{ 
+              color: 'var(--color-primary)', 
+              borderTop: spaces.length > 0 ? '1px solid var(--color-border)' : 'none', 
+              marginTop: spaces.length > 0 ? 'var(--space-1)' : 0 
+            }}
+          >
+            <div className={styles.spaceOptionIcon} style={{ background: 'transparent' }}>＋</div>
+            <div style={{ fontWeight: 500, fontSize: 'var(--text-sm)' }}>Create Space</div>
+          </button>
         </div>
+      )}
+      
+      {createModalOpen && (
+        <CreateSpaceModal onClose={() => setCreateModalOpen(false)} showToast={showToast} />
       )}
     </div>
   );

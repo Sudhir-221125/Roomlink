@@ -7,15 +7,12 @@ import ResidentOverview from '../../components/ResidentOverview/ResidentOverview
 import ActivityFeed from '../../components/ActivityFeed/ActivityFeed';
 import UpcomingReminders from '../../components/UpcomingReminders/UpcomingReminders';
 import AddReminderModal from '../../components/AddReminderModal/AddReminderModal';
+import CreateSpaceModal from '../../components/CreateSpaceModal/CreateSpaceModal';
 
 import { useAuth } from '../../contexts/AuthContext';
 import { useSpace } from '../../contexts/SpaceContext';
 import { useStaggeredReveal } from '../../hooks/useScrollReveal';
-import {
-  recentActivity,
-  upcomingReminders as initialReminders,
-  todaySchedule,
-} from '../../services/mockData';
+import { useToast } from '../../contexts/ToastContext';
 import styles from './DashboardPage.module.css';
 
 import { getBills } from '../../services/billService';
@@ -26,8 +23,9 @@ import { getComplaints } from '../../services/complaintService';
 export default function DashboardPage({ onNavigate }) {
   const { user } = useAuth();
   const { currentSpace, members } = useSpace();
+  const { showToast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
-  const [reminders, setReminders] = useState(initialReminders);
+  const [reminders, setReminders] = useState([]);
 
   // REAL API State for derived metrics
   const [bills, setBills] = useState([]);
@@ -35,6 +33,7 @@ export default function DashboardPage({ onNavigate }) {
   const [chores, setChores] = useState([]);
   const [complaints, setComplaints] = useState([]);
   const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);
+  const [createSpaceOpen, setCreateSpaceOpen] = useState(false);
 
   const spaceId = currentSpace?._id || currentSpace?.id;
 
@@ -133,6 +132,33 @@ export default function DashboardPage({ onNavigate }) {
     setReminders((prev) => [...prev, reminder]);
   }
 
+  if (!currentSpace && !isLoadingMetrics) {
+    return (
+      <div className={styles.page} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
+        <div style={{ textAlign: 'center', maxWidth: 400, padding: 'var(--space-8)' }}>
+          <div style={{ fontSize: '3rem', marginBottom: 'var(--space-4)' }}>🏢</div>
+          <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 600, marginBottom: 'var(--space-2)' }}>Welcome to RoomLink</h1>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: 'var(--space-6)', lineHeight: 1.5 }}>
+            You don't have a Space yet. Create one to start managing your residence, tracking bills, and collaborating with housemates.
+          </p>
+          <button 
+            className="rl-btn rl-btn-primary" 
+            style={{ width: '100%', justifyContent: 'center' }}
+            onClick={() => setCreateSpaceOpen(true)}
+          >
+            Create Space
+          </button>
+        </div>
+        {createSpaceOpen && (
+          <CreateSpaceModal
+            onClose={() => setCreateSpaceOpen(false)}
+            showToast={showToast}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page} ref={layoutRef}>
 
@@ -179,8 +205,7 @@ export default function DashboardPage({ onNavigate }) {
           </div>
 
           <div className={styles.revealSection}>
-            {/* MOCK DATA — Schedule derived from mock chores/visitors */}
-            <TodaySchedule schedule={todaySchedule} />
+            <TodaySchedule schedule={[]} />
           </div>
         </div>
 
@@ -195,13 +220,11 @@ export default function DashboardPage({ onNavigate }) {
           </div>
 
           <div className={styles.revealSection}>
-            {/* MOCK DATA — Reminders stored locally (no API yet) */}
             <UpcomingReminders reminders={reminders} onAddClick={() => setModalOpen(true)} />
           </div>
 
           <div className={styles.revealSection}>
-            {/* MOCK DATA — Activity feed (no API yet) */}
-            <ActivityFeed activities={recentActivity} />
+            <ActivityFeed activities={[]} />
           </div>
         </div>
       </div>

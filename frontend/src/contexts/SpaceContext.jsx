@@ -132,10 +132,10 @@ export function SpaceProvider({ children }) {
   }, [currentSpace, fetchSpaces]);
 
   // ── Membership management ───────────────────────────────────────────────
-  const addSpaceMember = useCallback(async (userId, role_in_space = 'member') => {
+  const addSpaceMember = useCallback(async (email, role_in_space = 'member') => {
     if (!currentSpace) return;
     const id = currentSpace._id || currentSpace.id;
-    const result = await addMember(id, { userId, role_in_space });
+    const result = await addMember(id, { email, role_in_space });
     await fetchMembers(id);
     return result;
   }, [currentSpace, fetchMembers]);

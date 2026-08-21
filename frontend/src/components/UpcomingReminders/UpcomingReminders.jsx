@@ -31,17 +31,23 @@ export default function UpcomingReminders({ reminders, onAddClick }) {
         </div>
       </div>
 
-      <ul className={styles.list} role="list">
-        {reminders.map((r) => (
-          <li key={r.id} className={styles.item}>
-            <span className={[styles.dot, COLOR_CLASS[r.color] || ''].join(' ')} aria-hidden="true" />
-            <div className={styles.info}>
-              <p className={styles.remTitle}>{r.title}</p>
-              <p className={styles.remDate}>{r.date}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {reminders.length > 0 ? (
+        <ul className={styles.list} role="list">
+          {reminders.map((r) => (
+            <li key={r.id} className={styles.item}>
+              <span className={[styles.dot, COLOR_CLASS[r.color] || ''].join(' ')} aria-hidden="true" />
+              <div className={styles.info}>
+                <p className={styles.remTitle}>{r.title}</p>
+                <p className={styles.remDate}>{r.date}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div style={{ padding: 'var(--space-4)', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+          No upcoming reminders.
+        </div>
+      )}
     </section>
   );
 }

@@ -28,8 +28,8 @@ export async function getMembers(spaceId) {
  * Body: { userId, role_in_space? }  — backend may also support email
  * Returns: Membership
  */
-export async function addMember(spaceId, { userId, role_in_space = 'member' }) {
-  return api.post(`/spaces/${spaceId}/members`, { userId, role_in_space });
+export async function addMember(spaceId, { email, role_in_space = 'member' }) {
+  return api.post(`/spaces/${spaceId}/members`, { email, role_in_space });
 }
 
 /**

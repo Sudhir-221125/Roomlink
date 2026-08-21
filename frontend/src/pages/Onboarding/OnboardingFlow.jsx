@@ -47,8 +47,8 @@ export default function OnboardingFlow({ onComplete, onCancel }) {
   const handleStep2Continue = async () => {
     setApiError('');
     if (role === 'manager') {
-      if (!spaceName.trim()) {
-        setApiError('Please enter a name for your space.');
+      if (!spaceName.trim() || !spaceAddress.trim()) {
+        setApiError('Please enter a name and address for your space.');
         return;
       }
       setIsSubmitting(true);
@@ -56,7 +56,7 @@ export default function OnboardingFlow({ onComplete, onCancel }) {
         await createNewSpace({
           name: spaceName.trim(),
           type: spaceType,
-          address: spaceAddress.trim() || undefined,
+          address: spaceAddress.trim(),
           description: spaceDescription.trim() || undefined,
         });
         handleNext();
@@ -190,7 +190,7 @@ export default function OnboardingFlow({ onComplete, onCancel }) {
                         </select>
                       </div>
                       <div className="auth-field" style={{ marginTop: 'var(--space-4)' }}>
-                        <label htmlFor="spaceAddress" className="auth-label">Address <span style={{color:'var(--color-text-muted)', fontWeight:400}}>(optional)</span></label>
+                        <label htmlFor="spaceAddress" className="auth-label">Address <span style={{color:'var(--color-danger)'}}>*</span></label>
                         <input
                           id="spaceAddress"
                           className="auth-input"

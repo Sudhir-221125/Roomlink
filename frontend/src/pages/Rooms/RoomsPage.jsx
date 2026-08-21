@@ -442,17 +442,17 @@ export default function RoomsPage() {
 
 // ── Add Member Modal ────────────────────────────────────────────────────────
 function AddMemberModal({ onClose, onAdded, showToast, addSpaceMember }) {
-  const [userId, setUserId] = useState('');
+  const [email, setEmail] = useState('');
   const [role, setRole] = useState('member');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!userId.trim()) { showToast('User ID is required', 'error'); return; }
+    if (!email.trim()) { showToast('Email is required', 'error'); return; }
 
     setIsSubmitting(true);
     try {
-      await addSpaceMember(userId.trim(), role);
+      await addSpaceMember(email.trim(), role);
       showToast('Member added successfully', 'success');
       onAdded();
     } catch (err) {
@@ -475,8 +475,8 @@ function AddMemberModal({ onClose, onAdded, showToast, addSpaceMember }) {
         <h2 style={{ marginBottom: 'var(--space-4)', fontSize: 'var(--text-lg)', fontWeight: 600 }}>Add Member</h2>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div className="auth-field">
-            <label className="auth-label">User ID *</label>
-            <input className="auth-input" value={userId} onChange={e => setUserId(e.target.value)} disabled={isSubmitting} placeholder="Enter the user's ID" />
+            <label className="auth-label">Email Address *</label>
+            <input type="email" className="auth-input" value={email} onChange={e => setEmail(e.target.value)} disabled={isSubmitting} placeholder="Enter the user's email" />
             <p style={{fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: 4}}>The user must be registered in RoomLink.</p>
           </div>
           <div className="auth-field">
